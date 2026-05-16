@@ -5,7 +5,7 @@
   "workspaceFolder": "/workspaces/village",
   "shutdownAction": "stopCompose",
   "remoteUser": "vscode",
-  "postCreateCommand": "git config --global --add safe.directory /workspaces/village",
+  "postCreateCommand": "git config --global --add safe.directory /workspaces/village && echo \"Dev container ready! USER=${USER:-default}\"",
   "forwardPorts": [8080],
   "customizations": {
     "vscode": {

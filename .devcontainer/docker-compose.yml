@@ -1,14 +1,15 @@
-name: village
+name: village-${USER:-default}
 
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: village-postgres-${USER:-default}
     environment:
       POSTGRES_DB: village
       POSTGRES_USER: village
       POSTGRES_PASSWORD: village
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -18,21 +19,23 @@ services:
       retries: 10
 
   dev:
+    container_name: village-dev-${USER:-default}
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - ..:/workspaces/village:cached
-      - gradle-cache:/home/vscode/.gradle
+      - gradle-cache-${USER:-default}:/home/vscode/.gradle
     command: sleep infinity
     environment:
       DATABASE_URL: jdbc:postgresql://postgres:5432/village
       SPRING_DATASOURCE_USERNAME: village
       SPRING_DATASOURCE_PASSWORD: village
+      DEV_USER: ${USER:-default}
     depends_on:
       postgres:
         condition: service_healthy
 
 volumes:
   pgdata:
-  gradle-cache:
+  gradle-cache-${USER:-default}:
