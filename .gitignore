@@ -1,0 +1,34 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Claude
+.claude/
+
+# GitHub (WARNING: CI/CD workflows won't work!)
+# .github/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+build/
+.gradle/
+out/
+bin/
+target/
+
+# Logs
+*.log
+
+# Temp
+*.tmp
+*.swp
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
