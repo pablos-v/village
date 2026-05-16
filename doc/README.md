@@ -28,26 +28,9 @@
 | **AI Provider** | OpenRouter | Бесплатная модель |
 | **Utils** | Lombok | |
 | **Build** | Gradle | Kotlin DSL |
-| **DevEnv** | Dev Containers | VS Code / JetBrains Gateway |
 | **Docker** | + docker-compose | |
 | **CI/CD** | GitHub Actions | |
 | **HTTPS** | nginx-proxy + letsencrypt | Автосертификаты |
-
-### DevContainer
-
-Разработка ведётся в Docker Dev Container (Java 25 + PostgreSQL):
-
-```bash
-git clone <repo-url>
-cd village
-code .  # VS Code — автоматически предложит "Reopen in Container"
-```
-
-**Что внутри devcontainer:**
-- Java 25 + Gradle фиксированной версии
-- PostgreSQL 16 в отдельном контейнере
-- Все инструменты предустановлены
-- Код монтируется с хоста, изменения видны мгновенно
 
 ### Dependency Management через BOM
 
@@ -252,7 +235,6 @@ AI генерирует SQL запросы из естественного яз�
 | **AI Provider** | OpenRouter | Бесплатная модель |
 | **Utils** | Lombok | |
 | **Build** | Gradle | Kotlin DSL |
-| **DevEnv** | Dev Containers | VS Code / JetBrains Gateway |
 | **Docker** | + docker-compose | |
 | **CI/CD** | GitHub Actions | |
 | **HTTPS** | nginx-proxy + letsencrypt | Автосертификаты |
