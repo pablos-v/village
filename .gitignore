@@ -5,6 +5,7 @@
 
 # Claude
 .claude/
+CLAUDE.md
 
 # GitHub (WARNING: CI/CD workflows won't work!)
 # .github/
