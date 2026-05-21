@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/village
+    username: village
+    password: village
+  jpa:
+    show-sql: true
+logging:
+  level:
+    ru.village: DEBUG
+    org.hibernate.SQL: DEBUG

@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: village
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate.default_schema: village
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: village
+    liquibase-schema: village
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+server:
+  port: 8080
