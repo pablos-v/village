@@ -33,18 +33,49 @@ services:
       - proxy-network
     restart: always
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: village-postgres
+    environment:
+      POSTGRES_DB: village
+      POSTGRES_USER: village
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - village_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U village -d village"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - proxy-network
+    restart: always
+
   village-app:
-    image: village-app:latest
+    image: ${IMAGE:-village-app:latest}
     container_name: village-app
+    depends_on:
+      postgres:
+        condition: service_healthy
     env_file:
       - .env
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/village
+      - SPRING_DATASOURCE_USERNAME=village
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - VIRTUAL_HOST=${DOMAIN_ADDRESS}
+      - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=${DOMAIN_ADDRESS}
       - LETSENCRYPT_EMAIL=${ADMIN_EMAIL}
+    expose:
+      - "8080"
     networks:
       - proxy-network
     restart: always
 
 networks:
   proxy-network:
+
+volumes:
+  village_pg_data:
