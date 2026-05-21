@@ -1,6 +1,10 @@
 spring:
   application:
     name: village
+  ai:
+    openai:
+      api-key: ${OPENROUTER_API_KEY:dummy-bootstrap-key}
+      base-url: https://openrouter.ai/api
   jpa:
     hibernate:
       ddl-auto: none
@@ -10,7 +14,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     default-schema: village
-    liquibase-schema: village
+    liquibase-schema: public
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
