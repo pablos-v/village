@@ -6,6 +6,9 @@
   "shutdownAction": "stopCompose",
   "remoteUser": "vscode",
   "postCreateCommand": "git config --global --add safe.directory /workspaces/village",
+  "mounts": [
+    "source=${localEnv:USERPROFILE}${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
+  ],
   "forwardPorts": [8080],
   "portsAttributes": {
     "8080": {
