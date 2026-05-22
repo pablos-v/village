@@ -7,6 +7,10 @@
 .claude/
 CLAUDE.md
 
+# Личный рабочий бэклог и implementation-планы (не часть публичной документации)
+doc/PLAN.md
+doc/plans/
+
 # GitHub (WARNING: CI/CD workflows won't work!)
 # .github/
 
