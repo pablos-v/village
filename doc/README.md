@@ -112,6 +112,21 @@ dependencyManagement {
 
 ---
 
+## Окружение разработки
+
+**Рекомендуется работать в DevContainer.** См. [`.devcontainer/README.md`](../.devcontainer/README.md).
+
+Кратко:
+- Открыть проект в VS Code/Cursor → "Reopen in Container" → ждать пока docker compose поднимет dev + postgres.
+- Внутри: `./gradlew test`, `./gradlew bootRun`. Никаких `JAVA_TOOL_OPTIONS`, `SPRING_PROFILES_ACTIVE` руками не нужно.
+- Postgres доступен изнутри как `postgres:5432`, снаружи (например, для DBeaver) — `localhost:5433`.
+
+Альтернатива (без devcontainer, прямо на хосте) — есть `docker-compose.dev.yml` (postgres на хост-порту 5432). При этом:
+- В `~/.gradle/gradle.properties` нужно `org.gradle.jvmargs=-Djava.net.preferIPv4Stack=true` (иначе на Windows с виртуальными адаптерами Hyper-V/WSL/VPN Java sockets ломаются).
+- При запуске тестов локально: `SPRING_PROFILES_ACTIVE=dev`, `JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true`.
+
+---
+
 ## UI для бабушки (максимально упрощённый)
 
 ### Приход
