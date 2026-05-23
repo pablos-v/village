@@ -5,8 +5,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
 
-    <include file="db/changelog/changes/001-create-schema.xml"/>
-    <include file="db/changelog/changes/002-base-tables.xml"/>
-    <include file="db/changelog/changes/003-balance-view.xml"/>
+    <changeSet id="003-balance-view" author="village">
+        <createView viewName="balance_view" schemaName="village">
+            SELECT
+                COALESCE((SELECT SUM(amount) FROM village.payment), 0)
+                - COALESCE((SELECT SUM(amount) FROM village.expense), 0)
+                AS amount
+        </createView>
+    </changeSet>
 
 </databaseChangeLog>
