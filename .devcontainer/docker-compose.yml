@@ -27,12 +27,16 @@ services:
     volumes:
       - ..:/workspaces/village:cached
       - gradle-cache:/home/vscode/.gradle
+      # Docker-outside-of-docker для Testcontainers (host docker.sock проксируется в контейнер)
+      - /var/run/docker.sock:/var/run/docker.sock
     command: sleep infinity
     environment:
       # DB_HOST=postgres внутри devcontainer (override host-default localhost)
       DB_HOST: postgres
       SPRING_DATASOURCE_USERNAME: village
       SPRING_DATASOURCE_PASSWORD: village
+      # Testcontainers: Ryuk слушает на host'е, devcontainer не на bridge-сети — ходим через host.docker.internal
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
     depends_on:
       postgres:
         condition: service_healthy

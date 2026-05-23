@@ -46,3 +46,9 @@ VS Code предложит **Reopen in Container** — нажимайте. Пе�
 ## Если используете devcontainer — `docker-compose.dev.yml` не нужен
 
 Один из них, не оба одновременно (избежать дублирования сетей/volume и путаницы).
+
+## Testcontainers (для интеграционных тестов)
+
+Внутри devcontainer Testcontainers работает через **docker-outside-of-docker**: сокет хоста `/var/run/docker.sock` смонтирован в `dev`, плюс установлен docker CLI через devcontainer feature.
+
+Контейнеры Testcontainers поднимаются на хосте (тем же Docker Desktop), но сетево не в нашей compose-сети — поэтому к Ryuk-reaper'у нужно ходить через `host.docker.internal`. Это задано переменной `TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal` в [docker-compose.yml](docker-compose.yml).

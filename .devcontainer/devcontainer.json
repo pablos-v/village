@@ -5,6 +5,13 @@
   "workspaceFolder": "/workspaces/village",
   "shutdownAction": "stopCompose",
   "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "installDockerBuildx": false,
+      "dockerDashComposeVersion": "none"
+    }
+  },
   "postCreateCommand": "git config --global --add safe.directory /workspaces/village",
   "mounts": [
     "source=${localEnv:USERPROFILE}${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
