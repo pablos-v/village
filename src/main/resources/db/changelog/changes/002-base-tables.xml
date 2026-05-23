@@ -46,4 +46,37 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="002-4-household" author="village">
+        <createTable tableName="household" schemaName="village">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="addrss_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_household_address"
+                             references="village.address(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="002-5-inhabitant" author="village">
+        <createTable tableName="inhabitant" schemaName="village">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(50)"/>
+            <column name="hh_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_inhabitant_household"
+                             references="village.household(id)"/>
+            </column>
+            <column name="is_master" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
