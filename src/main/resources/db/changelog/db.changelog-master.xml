@@ -8,5 +8,6 @@
     <include file="db/changelog/changes/001-create-schema.xml"/>
     <include file="db/changelog/changes/002-base-tables.xml"/>
     <include file="db/changelog/changes/003-balance-view.xml"/>
+    <include file="db/changelog/changes/004-indexes.xml"/>
 
 </databaseChangeLog>

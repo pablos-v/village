@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="004-indexes" author="village">
+        <createIndex indexName="idx_address_street" tableName="address" schemaName="village">
+            <column name="street_id"/>
+        </createIndex>
+        <createIndex indexName="idx_address_bldng" tableName="address" schemaName="village">
+            <column name="bldng_id"/>
+        </createIndex>
+        <createIndex indexName="idx_household_address" tableName="household" schemaName="village">
+            <column name="addrss_id"/>
+        </createIndex>
+        <createIndex indexName="idx_inhabitant_household" tableName="inhabitant" schemaName="village">
+            <column name="hh_id"/>
+        </createIndex>
+        <createIndex indexName="idx_payment_household" tableName="payment" schemaName="village">
+            <column name="hh_id"/>
+        </createIndex>
+        <createIndex indexName="idx_payment_events" tableName="payment" schemaName="village">
+            <column name="evnt_id"/>
+        </createIndex>
+        <createIndex indexName="idx_payment_paydate" tableName="payment" schemaName="village">
+            <column name="paydate"/>
+        </createIndex>
+        <createIndex indexName="idx_expense_events" tableName="expense" schemaName="village">
+            <column name="event_id"/>
+        </createIndex>
+        <createIndex indexName="idx_expense_date" tableName="expense" schemaName="village">
+            <column name="date"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
