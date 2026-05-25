@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Village</title>
+</head>
+<body>
+<h1>Village — сборы на нашей улице</h1>
+
+<section>
+    <h2>Остаток: <span th:text="${balance}">0</span> ₽</h2>
+</section>
+
+<section>
+    <h3>Последние поступления</h3>
+    <ul>
+        <li th:each="p : ${recentPayments}">
+            <span th:text="${p.date}"></span> —
+            <span th:text="${p.address}"></span> —
+            <span th:text="${p.amount}"></span> ₽
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h3>Последние расходы</h3>
+    <ul>
+        <li th:each="e : ${recentExpenses}">
+            <span th:text="${e.date}"></span> —
+            <span th:text="${e.comment}"></span> —
+            <span th:text="${e.amount}"></span> ₽
+        </li>
+    </ul>
+</section>
+
+<p><a th:href="@{/payments}">Все поступления</a> · <a th:href="@{/expenses}">Все расходы</a> · <a th:href="@{/history}">История</a></p>
+
+<form th:action="@{/logout}" method="post"><button>Выйти</button></form>
+</body>
+</html>

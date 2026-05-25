@@ -35,7 +35,7 @@ class SecurityFilterChainTest extends IntegrationTestBase {
     @Test
     @WithAnonymousUser
     void publicPingRequiresLogin() throws Exception {
-        mockMvc.perform(get("/ping")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(get("/")).andExpect(status().is3xxRedirection());
     }
 
     @Test
@@ -47,7 +47,7 @@ class SecurityFilterChainTest extends IntegrationTestBase {
     @Test
     @WithMockUser(username = "user", roles = "USER")
     void userCanAccessPublic() throws Exception {
-        mockMvc.perform(get("/ping")).andExpect(status().isOk());
+        mockMvc.perform(get("/")).andExpect(status().isOk());
     }
 
     @Test
@@ -65,13 +65,13 @@ class SecurityFilterChainTest extends IntegrationTestBase {
     @Test
     @WithMockUser(username = "operator", roles = "OPERATOR")
     void operatorCanAccessPublic() throws Exception {
-        mockMvc.perform(get("/ping")).andExpect(status().isOk());
+        mockMvc.perform(get("/")).andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void adminCanAccessEverything() throws Exception {
         mockMvc.perform(get("/admin/ping")).andExpect(status().isOk());
-        mockMvc.perform(get("/ping")).andExpect(status().isOk());
+        mockMvc.perform(get("/")).andExpect(status().isOk());
     }
 }
