@@ -6,10 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import ru.village.IntegrationTestBase;
+import ru.village.controller.dto.request.CreatePaymentRequest;
 import ru.village.domain.*;
+import ru.village.exception.EntityNotFoundException;
 import ru.village.repository.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PaymentServiceTest extends IntegrationTestBase {
 
@@ -52,5 +55,25 @@ class PaymentServiceTest extends IntegrationTestBase {
         var page = paymentService.findAll(2026, 3, PageRequest.of(0, 10));
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().get(0).date().getMonthValue()).isEqualTo(3);
+    }
+
+    @Test
+    void createPayment() {
+        Street st = streetRepo.save(new Street(null, "Зелёная"));
+        Bldng bl = bldngRepo.save(new Bldng(null, "316", null));
+        Household hh = hhRepo.save(new Household(null, addressRepo.save(new Address(null, st, bl))));
+        Event ev = eventRepo.save(new Event(null, "март", new BigDecimal("500")));
+
+        var resp = paymentService.create(
+                new CreatePaymentRequest(ev.getId(), hh.getId(), new BigDecimal("500"), LocalDate.now()));
+        assertThat(resp.id()).isNotNull();
+        assertThat(resp.amount()).isEqualByComparingTo("500");
+    }
+
+    @Test
+    void createPaymentFailsOnUnknownEvent() {
+        var req = new CreatePaymentRequest(999_999L, 1L, new BigDecimal("500"), LocalDate.now());
+        assertThatThrownBy(() -> paymentService.create(req))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 }
