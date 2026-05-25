@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>История</title>
+</head>
+<body>
+<h1>История по периодам</h1>
+
+<table>
+    <thead>
+    <tr><th>Событие</th><th>Собрано</th><th>Потрачено</th><th>Остаток</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="p : ${periods}">
+        <td th:text="${p.eventName}"></td>
+        <td th:text="${p.collected}"></td>
+        <td th:text="${p.spent}"></td>
+        <td th:text="${p.collected.subtract(p.spent)}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/}">← Назад на главную</a></p>
+</body>
+</html>

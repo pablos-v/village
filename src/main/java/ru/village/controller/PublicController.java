@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.village.service.IBalanceService;
 import ru.village.service.IExpenseService;
+import ru.village.service.IHistoryService;
 import ru.village.service.IPaymentService;
 
 /** Публичные страницы для USER+. */
@@ -20,6 +21,7 @@ public class PublicController {
     private final IBalanceService balanceService;
     private final IPaymentService paymentService;
     private final IExpenseService expenseService;
+    private final IHistoryService historyService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -46,5 +48,11 @@ public class PublicController {
     public String expenses(@PageableDefault(size = 50) Pageable pageable, Model model) {
         model.addAttribute("expenses", expenseService.findAll(pageable));
         return "expenses";
+    }
+
+    @GetMapping("/history")
+    public String history(Model model) {
+        model.addAttribute("periods", historyService.periods());
+        return "history";
     }
 }
