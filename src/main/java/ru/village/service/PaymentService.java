@@ -2,9 +2,11 @@ package ru.village.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.village.controller.dto.request.CreatePaymentRequest;
@@ -19,6 +21,7 @@ import ru.village.repository.PaymentRepository;
 /** Чтение поступлений + создание новых записей. */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService implements IPaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -48,6 +51,13 @@ public class PaymentService implements IPaymentService {
                 .orElseThrow(() -> new EntityNotFoundException("Household " + req.householdId() + " не найден"));
 
         Payment saved = paymentRepository.save(new Payment(null, household, req.date(), event, req.amount()));
+        log.info("audit: payment created id={} hh={} event={} amount={} by user={}",
+                saved.getId(), req.householdId(), req.eventId(), req.amount(), currentUser());
         return paymentMapper.toResponse(saved);
+    }
+
+    private static String currentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth == null ? "system" : auth.getName();
     }
 }
