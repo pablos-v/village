@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Village</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 <h1>Village — сборы на нашей улице</h1>
@@ -43,6 +45,15 @@
         </li>
     </ul>
 </section>
+
+<section>
+    <h3>AI-ассистент</h3>
+    <textarea id="ai-input" rows="2" cols="60" placeholder="Например: какой остаток? кто сдал больше всех?"></textarea>
+    <br/>
+    <button id="ai-send">Спросить</button>
+    <div id="ai-history" style="margin-top: 1em;"></div>
+</section>
+<script th:src="@{/js/ai-chat.js}" defer></script>
 
 <p><a th:href="@{/payments}">Все поступления</a> · <a th:href="@{/expenses}">Все расходы</a> · <a th:href="@{/history}">История</a></p>
 
