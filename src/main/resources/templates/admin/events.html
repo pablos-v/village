@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>События</title>
+</head>
+<body>
+<h1>События (платёжные периоды)</h1>
+
+<table>
+    <thead>
+    <tr><th>Название</th><th>Ожидаемая сумма</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="e : ${events}">
+        <td th:text="${e.name}"></td>
+        <td th:text="${e.cost}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/admin/events/new}">+ Новое событие</a></p>
+<p><a th:href="@{/}">← На главную</a></p>
+</body>
+</html>

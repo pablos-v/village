@@ -41,7 +41,7 @@ class SecurityFilterChainTest extends IntegrationTestBase {
     @Test
     @WithAnonymousUser
     void adminPingRequiresLogin() throws Exception {
-        mockMvc.perform(get("/admin/ping")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(get("/admin/events")).andExpect(status().is3xxRedirection());
     }
 
     @Test
@@ -53,13 +53,13 @@ class SecurityFilterChainTest extends IntegrationTestBase {
     @Test
     @WithMockUser(username = "user", roles = "USER")
     void userForbiddenFromAdmin() throws Exception {
-        mockMvc.perform(get("/admin/ping")).andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin/events")).andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(username = "operator", roles = "OPERATOR")
     void operatorCanAccessAdmin() throws Exception {
-        mockMvc.perform(get("/admin/ping")).andExpect(status().isOk());
+        mockMvc.perform(get("/admin/events")).andExpect(status().isOk());
     }
 
     @Test
@@ -71,7 +71,7 @@ class SecurityFilterChainTest extends IntegrationTestBase {
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void adminCanAccessEverything() throws Exception {
-        mockMvc.perform(get("/admin/ping")).andExpect(status().isOk());
+        mockMvc.perform(get("/admin/events")).andExpect(status().isOk());
         mockMvc.perform(get("/")).andExpect(status().isOk());
     }
 }
