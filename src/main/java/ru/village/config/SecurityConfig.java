@@ -3,6 +3,7 @@ package ru.village.config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -46,6 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/login", "/css/**", "/js/**", "/webjars/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole("OPERATOR", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/events", "/api/payments", "/api/expenses")
+                                .hasAnyRole("OPERATOR", "ADMIN")
                         .anyRequest().hasAnyRole("USER", "OPERATOR", "ADMIN")
                 )
                 .formLogin(form -> form
