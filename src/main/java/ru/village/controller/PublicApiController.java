@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.village.controller.dto.response.AddressDto;
+import ru.village.controller.dto.response.ContactResponse;
 import ru.village.controller.dto.response.ExpenseResponse;
 import ru.village.controller.dto.response.HistoryPeriod;
 import ru.village.controller.dto.response.PaymentResponse;
@@ -20,6 +21,7 @@ import ru.village.service.IExpenseService;
 import ru.village.service.IHistoryService;
 import ru.village.service.IHouseholdService;
 import ru.village.service.IPaymentService;
+import ru.village.service.IUsefulContactInfoService;
 
 /** REST API для USER+ — поставляет JSON для Thymeleaf-страниц и AI-чата. */
 @RestController
@@ -32,6 +34,7 @@ public class PublicApiController {
     private final IExpenseService expenseService;
     private final IHistoryService historyService;
     private final IHouseholdService householdService;
+    private final IUsefulContactInfoService contactService;
 
     @GetMapping("/balance")
     public Map<String, BigDecimal> balance() {
@@ -64,5 +67,10 @@ public class PublicApiController {
     @GetMapping("/addresses")
     public List<AddressDto> addresses(@RequestParam(required = false, defaultValue = "") String q) {
         return householdService.searchAddresses(q);
+    }
+
+    @GetMapping("/contacts")
+    public List<ContactResponse> contacts() {
+        return contactService.findAll();
     }
 }
