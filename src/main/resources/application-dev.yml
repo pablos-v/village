@@ -9,3 +9,9 @@ logging:
   level:
     ru.village: DEBUG
     org.hibernate.SQL: DEBUG
+
+app:
+  security:
+    admin-password: admin
+    operator-password: operator
+    user-password: user

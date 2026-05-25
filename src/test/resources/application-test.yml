@@ -3,3 +3,9 @@ spring:
     show-sql: true
   liquibase:
     enabled: true
+
+app:
+  security:
+    admin-password: admin
+    operator-password: operator
+    user-password: user
