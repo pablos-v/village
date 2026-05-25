@@ -41,4 +41,10 @@ public class PublicController {
         model.addAttribute("month", month);
         return "payments";
     }
+
+    @GetMapping("/expenses")
+    public String expenses(@PageableDefault(size = 50) Pageable pageable, Model model) {
+        model.addAttribute("expenses", expenseService.findAll(pageable));
+        return "expenses";
+    }
 }

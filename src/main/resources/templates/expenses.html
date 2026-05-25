@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Расходы</title>
+</head>
+<body>
+<h1>Все расходы</h1>
+
+<table>
+    <thead>
+    <tr><th>Дата</th><th>Комментарий</th><th>Событие</th><th>Сумма</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="e : ${expenses.content}">
+        <td th:text="${e.date}"></td>
+        <td th:text="${e.comment}"></td>
+        <td th:text="${e.eventName}"></td>
+        <td th:text="${e.amount}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    Страница <span th:text="${expenses.number + 1}"></span> из <span th:text="${expenses.totalPages}"></span>
+</p>
+
+<p><a th:href="@{/}">← Назад на главную</a></p>
+</body>
+</html>
