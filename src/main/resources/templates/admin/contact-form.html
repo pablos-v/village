@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Контакт</title>
+</head>
+<body>
+<h1>Контакт</h1>
+
+<form th:action="@{${action}}" th:object="${form}" method="post">
+    <div>
+        <label>Тип: <input type="text" th:field="*{type}" maxlength="100"/></label>
+        <span th:errors="*{type}" style="color:red;"></span>
+    </div>
+    <div>
+        <label>Контакт: <textarea th:field="*{contactInfo}" rows="3" cols="60"></textarea></label>
+        <span th:errors="*{contactInfo}" style="color:red;"></span>
+    </div>
+    <div>
+        <label>Примечание: <input type="text" th:field="*{comment}" maxlength="500"/></label>
+        <span th:errors="*{comment}" style="color:red;"></span>
+    </div>
+    <button>Сохранить</button>
+</form>
+
+<p><a th:href="@{/admin/contacts}">← Назад</a></p>
+</body>
+</html>

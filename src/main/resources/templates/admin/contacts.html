@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Контакты</title>
+</head>
+<body>
+<h1>Полезная информация — управление</h1>
+
+<table>
+    <thead>
+    <tr><th>Тип</th><th>Контакт</th><th>Примечание</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${contacts}">
+        <td th:text="${c.type}"></td>
+        <td th:text="${c.contactInfo}"></td>
+        <td th:text="${c.comment}"></td>
+        <td>
+            <a th:href="@{'/admin/contacts/' + ${c.id} + '/edit'}">Edit</a>
+            <form th:action="@{'/admin/contacts/' + ${c.id} + '/delete'}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Удалить?')">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/admin/contacts/new}">+ Новый контакт</a></p>
+<p><a th:href="@{/}">← На главную</a></p>
+</body>
+</html>

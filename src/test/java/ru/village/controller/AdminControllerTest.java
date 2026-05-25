@@ -81,4 +81,29 @@ class AdminControllerTest extends IntegrationTestBase {
                 .andExpect(model().attributeExists("form"))
                 .andExpect(model().attributeExists("events"));
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminCanAccessContactsList() throws Exception {
+        mockMvc.perform(get("/admin/contacts"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/contacts"))
+                .andExpect(model().attributeExists("contacts"));
+    }
+
+    @Test
+    @WithMockUser(roles = "OPERATOR")
+    void operatorForbiddenFromContacts() throws Exception {
+        mockMvc.perform(get("/admin/contacts")).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminCanOpenNewContactForm() throws Exception {
+        mockMvc.perform(get("/admin/contacts/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/contact-form"))
+                .andExpect(model().attributeExists("form"))
+                .andExpect(model().attribute("action", "/admin/contacts"));
+    }
 }
