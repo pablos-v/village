@@ -33,6 +33,17 @@
     </ul>
 </section>
 
+<section th:if="${!contacts.isEmpty()}">
+    <h3>Полезная информация</h3>
+    <ul>
+        <li th:each="c : ${contacts}">
+            <strong th:text="${c.type}"></strong>:
+            <span th:text="${c.contactInfo}"></span>
+            <em th:if="${c.comment}" th:text="${'(' + c.comment + ')'}"></em>
+        </li>
+    </ul>
+</section>
+
 <p><a th:href="@{/payments}">Все поступления</a> · <a th:href="@{/expenses}">Все расходы</a> · <a th:href="@{/history}">История</a></p>
 
 <form th:action="@{/logout}" method="post"><button>Выйти</button></form>

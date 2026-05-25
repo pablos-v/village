@@ -12,6 +12,7 @@ import ru.village.service.IBalanceService;
 import ru.village.service.IExpenseService;
 import ru.village.service.IHistoryService;
 import ru.village.service.IPaymentService;
+import ru.village.service.IUsefulContactInfoService;
 
 /** Публичные страницы для USER+. */
 @Controller
@@ -22,12 +23,14 @@ public class PublicController {
     private final IPaymentService paymentService;
     private final IExpenseService expenseService;
     private final IHistoryService historyService;
+    private final IUsefulContactInfoService contactService;
 
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("balance", balanceService.currentBalance());
         model.addAttribute("recentPayments", paymentService.recent(10));
         model.addAttribute("recentExpenses", expenseService.findAll(PageRequest.of(0, 5)).getContent());
+        model.addAttribute("contacts", contactService.findAll());
         return "index";
     }
 
