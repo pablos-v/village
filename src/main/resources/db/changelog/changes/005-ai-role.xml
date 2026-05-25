@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="005-ai-role" author="village" runOnChange="false">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM pg_roles WHERE rolname = 'village_ai'
+            </sqlCheck>
+        </preConditions>
+        <sql splitStatements="true" endDelimiter=";">
+            CREATE ROLE village_ai LOGIN PASSWORD '${ai.role.password}';
+
+            GRANT USAGE ON SCHEMA village TO village_ai;
+            GRANT SELECT ON ALL TABLES IN SCHEMA village TO village_ai;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA village GRANT SELECT ON TABLES TO village_ai;
+
+            REVOKE ALL ON SCHEMA public FROM village_ai;
+
+            ALTER ROLE village_ai SET search_path = village;
+            ALTER ROLE village_ai SET statement_timeout = '3s';
+            ALTER ROLE village_ai SET lock_timeout = '1s';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
