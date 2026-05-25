@@ -9,3 +9,8 @@ app:
     admin-password: admin
     operator-password: operator
     user-password: user
+  ai-datasource:
+    # url переопределяется через @DynamicPropertySource в IntegrationTestBase
+    url: jdbc:postgresql://localhost:5432/village
+    username: village_ai
+    password: village_ai_dev

@@ -24,6 +24,12 @@ spring:
     hikari:
       maximum-pool-size: 10
 
+app:
+  ai-datasource:
+    url: ${SPRING_AI_DATASOURCE_URL}
+    username: ${SPRING_AI_DATASOURCE_USERNAME}
+    password: ${SPRING_AI_DATASOURCE_PASSWORD}
+
 management:
   endpoints:
     web:
