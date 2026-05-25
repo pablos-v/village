@@ -71,4 +71,14 @@ class AdminControllerTest extends IntegrationTestBase {
                 .andExpect(model().attributeExists("form"))
                 .andExpect(model().attributeExists("events"));
     }
+
+    @Test
+    @WithMockUser(roles = "OPERATOR")
+    void newExpenseFormPageOk() throws Exception {
+        mockMvc.perform(get("/admin/expense/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/expense-new"))
+                .andExpect(model().attributeExists("form"))
+                .andExpect(model().attributeExists("events"));
+    }
 }

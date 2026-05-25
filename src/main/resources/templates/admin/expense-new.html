@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Новый расход</title>
+</head>
+<body>
+<h1>Внести расход</h1>
+
+<form th:action="@{/admin/expense}" th:object="${form}" method="post">
+    <div>
+        <label>Событие:</label>
+        <select th:field="*{eventId}">
+            <option th:each="e : ${events}" th:value="${e.id}" th:text="${e.name}"></option>
+        </select>
+        <span th:errors="*{eventId}" style="color:red;"></span>
+    </div>
+
+    <div>
+        <label>Сумма: <input type="number" step="0.01" th:field="*{amount}"/></label>
+        <span th:errors="*{amount}" style="color:red;"></span>
+    </div>
+
+    <div>
+        <label>Дата: <input type="date" th:field="*{date}"/></label>
+        <span th:errors="*{date}" style="color:red;"></span>
+    </div>
+
+    <div>
+        <label>Комментарий: <input type="text" th:field="*{comment}" maxlength="500"/></label>
+        <span th:errors="*{comment}" style="color:red;"></span>
+    </div>
+
+    <button>Сохранить</button>
+</form>
+
+<p><a th:href="@{/}">← Назад на главную</a></p>
+</body>
+</html>

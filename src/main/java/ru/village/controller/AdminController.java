@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.village.controller.dto.request.CreateEventRequest;
+import ru.village.controller.dto.request.CreateExpenseRequest;
 import ru.village.controller.dto.request.CreatePaymentRequest;
 import ru.village.service.IEventService;
+import ru.village.service.IExpenseService;
 import ru.village.service.IPaymentService;
 
 /** HTML-формы операторской зоны (OPERATOR+). */
@@ -23,6 +25,7 @@ public class AdminController {
 
     private final IEventService eventService;
     private final IPaymentService paymentService;
+    private final IExpenseService expenseService;
 
     @GetMapping("/events")
     public String events(Model model) {
@@ -59,6 +62,25 @@ public class AdminController {
             return "admin/payment-new";
         }
         paymentService.create(form);
+        return "redirect:/";
+    }
+
+    @GetMapping("/expense/new")
+    public String newExpenseForm(Model model) {
+        model.addAttribute("form", new CreateExpenseRequest(null, null, LocalDate.now(), ""));
+        model.addAttribute("events", eventService.findAll());
+        return "admin/expense-new";
+    }
+
+    @PostMapping("/expense")
+    public String createExpense(
+            @Valid @ModelAttribute("form") CreateExpenseRequest form,
+            BindingResult br, Model model) {
+        if (br.hasErrors()) {
+            model.addAttribute("events", eventService.findAll());
+            return "admin/expense-new";
+        }
+        expenseService.create(form);
         return "redirect:/";
     }
 }
