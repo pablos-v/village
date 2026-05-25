@@ -20,4 +20,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         ORDER BY p.paydate DESC, p.id DESC
         """)
     Page<Payment> findFiltered(@Param("year") Integer year, @Param("month") Integer month, Pageable pageable);
+
+    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.event.id = :eventId")
+    java.math.BigDecimal sumByEvent(@Param("eventId") Long eventId);
 }
