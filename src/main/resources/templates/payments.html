@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Поступления</title>
+</head>
+<body>
+<h1>Все поступления</h1>
+
+<form method="get" th:action="@{/payments}">
+    <label>Год: <input type="number" name="year" th:value="${year}"/></label>
+    <label>Месяц: <input type="number" name="month" min="1" max="12" th:value="${month}"/></label>
+    <button>Фильтр</button>
+</form>
+
+<table>
+    <thead>
+    <tr><th>Дата</th><th>Адрес</th><th>Событие</th><th>Сумма</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="p : ${payments.content}">
+        <td th:text="${p.date}"></td>
+        <td th:text="${p.address}"></td>
+        <td th:text="${p.eventName}"></td>
+        <td th:text="${p.amount}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    Страница <span th:text="${payments.number + 1}"></span> из <span th:text="${payments.totalPages}"></span>
+</p>
+
+<p><a th:href="@{/}">← Назад на главную</a></p>
+</body>
+</html>
