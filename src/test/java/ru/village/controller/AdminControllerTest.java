@@ -61,4 +61,14 @@ class AdminControllerTest extends IntegrationTestBase {
     void userForbidden() throws Exception {
         mockMvc.perform(get("/admin/events")).andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(roles = "OPERATOR")
+    void newPaymentFormPageOk() throws Exception {
+        mockMvc.perform(get("/admin/payment/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/payment-new"))
+                .andExpect(model().attributeExists("form"))
+                .andExpect(model().attributeExists("events"));
+    }
 }

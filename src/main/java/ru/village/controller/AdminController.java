@@ -1,6 +1,7 @@
 package ru.village.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.village.controller.dto.request.CreateEventRequest;
+import ru.village.controller.dto.request.CreatePaymentRequest;
 import ru.village.service.IEventService;
+import ru.village.service.IPaymentService;
 
 /** HTML-формы операторской зоны (OPERATOR+). */
 @Controller
@@ -19,6 +22,7 @@ import ru.village.service.IEventService;
 public class AdminController {
 
     private final IEventService eventService;
+    private final IPaymentService paymentService;
 
     @GetMapping("/events")
     public String events(Model model) {
@@ -37,5 +41,24 @@ public class AdminController {
         if (br.hasErrors()) return "admin/event-new";
         eventService.create(form);
         return "redirect:/admin/events";
+    }
+
+    @GetMapping("/payment/new")
+    public String newPaymentForm(Model model) {
+        model.addAttribute("form", new CreatePaymentRequest(null, null, null, LocalDate.now()));
+        model.addAttribute("events", eventService.findAll());
+        return "admin/payment-new";
+    }
+
+    @PostMapping("/payment")
+    public String createPayment(
+            @Valid @ModelAttribute("form") CreatePaymentRequest form,
+            BindingResult br, Model model) {
+        if (br.hasErrors()) {
+            model.addAttribute("events", eventService.findAll());
+            return "admin/payment-new";
+        }
+        paymentService.create(form);
+        return "redirect:/";
     }
 }
