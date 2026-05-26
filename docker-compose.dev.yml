@@ -1,3 +1,15 @@
+# FALLBACK для разработки БЕЗ devcontainer.
+# Рекомендуемый путь — devcontainer (см. .devcontainer/README.md).
+# Этот compose поднимает только postgres на хосте:5432; само приложение
+# запускается через `./gradlew bootRun` на хосте.
+#
+# Используй когда:
+#   - devcontainer не работает (Docker Desktop недоступен, корпсеть и т.д.)
+#   - нужна нативная отладка через IntelliJ IDEA на Windows без VS Code
+#
+# Внутри devcontainer этот файл НЕ нужен — postgres уже поднят
+# .devcontainer/docker-compose.yml.
+
 services:
   postgres:
     image: postgres:16-alpine

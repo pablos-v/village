@@ -14,6 +14,9 @@
   },
   "postCreateCommand": "git config --global --add safe.directory /workspaces/village",
   "postStartCommand": "sudo chgrp docker /var/run/docker.sock || true",
+  "containerEnv": {
+    "OPENROUTER_API_KEY": "${localEnv:OPENROUTER_API_KEY}"
+  },
   "mounts": [
     "source=${localEnv:USERPROFILE}${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
   ],
