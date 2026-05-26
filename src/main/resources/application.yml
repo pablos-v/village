@@ -5,6 +5,9 @@ spring:
     openai:
       api-key: ${OPENROUTER_API_KEY:dummy-bootstrap-key}
       base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model: ${AI_MODEL:openrouter/arcee-ai/trinity-large-preview:free}
   jpa:
     hibernate:
       ddl-auto: none
