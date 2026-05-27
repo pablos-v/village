@@ -7,6 +7,8 @@
 .balance-negative { color: var(--balance-negative); }
 
 /* ===== Кнопки навигации ===== */
+/* Единая зелёная гамма. Неактивные — контурные (рамка + цветной текст),
+   активная — залита. Роли различаются оттенком зелёного. */
 .nav-btns { gap: .4rem; }
 
 .nav-btn {
@@ -16,13 +18,22 @@
     border-radius: .45rem;
     font-weight: 600;
     text-decoration: none;
-    border: none;
-    transition: background-color .15s ease, transform .12s ease;
+    border: 1.5px solid var(--nav-c);
+    color: var(--nav-c);
+    background: transparent;
+    transition: background-color .15s ease, color .15s ease, transform .12s ease;
 }
-.nav-btn:hover  { transform: translateY(-1px); }
-.nav-btn.active { transform: translateY(-2px); }
+.nav-btn:hover {
+    background: color-mix(in srgb, var(--nav-c) 12%, transparent);
+    transform: translateY(-1px);
+}
+.nav-btn.active {
+    background: var(--nav-c);
+    color: #fff;
+    transform: translateY(-2px);
+}
 
-/* подсветка, «стекающая» вниз от активной кнопки */
+/* подсветка-полоса, «стекающая» вниз от активной кнопки */
 .nav-btn.active::after {
     content: '';
     position: absolute;
@@ -31,25 +42,13 @@
     bottom: -.5rem;
     height: 4px;
     border-radius: 2px 2px 0 0;
+    background: var(--nav-c);
 }
 
-/* базовые пункты (любой пользователь) — зелёный */
-.nav-btn--user               { background: #198754; color: #fff; }
-.nav-btn--user:hover         { background: #157347; color: #fff; }
-.nav-btn--user.active        { background: #115c39; color: #fff; }
-.nav-btn--user.active::after { background: #20c997; }
-
-/* пункты оператора (сверх обычного пользователя) — жёлтый */
-.nav-btn--op               { background: #ffc107; color: #332701; }
-.nav-btn--op:hover         { background: #e0a800; color: #332701; }
-.nav-btn--op.active        { background: #cc9a00; color: #332701; }
-.nav-btn--op.active::after { background: #ffce3a; }
-
-/* пункт админа — красный */
-.nav-btn--admin               { background: #dc3545; color: #fff; }
-.nav-btn--admin:hover         { background: #bb2d3b; color: #fff; }
-.nav-btn--admin.active        { background: #a52834; color: #fff; }
-.nav-btn--admin.active::after { background: #ff6b78; }
+/* оттенки зелёного по ролям */
+.nav-btn--user  { --nav-c: #198754; }  /* обычный — success green */
+.nav-btn--op    { --nav-c: #0f766e; }  /* оператор — teal */
+.nav-btn--admin { --nav-c: #166534; }  /* админ — тёмно-зелёный */
 
 @media (max-width: 480px) {
     h1 { font-size: 1.5rem; }

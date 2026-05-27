@@ -15,12 +15,12 @@
             <tbody>
             <tr th:each="p : ${periods}">
                 <td th:text="${p.eventName}"></td>
-                <td class="text-end" th:text="${p.collected} + ' ₽'"></td>
-                <td class="text-end" th:text="${p.spent} + ' ₽'"></td>
+                <td class="text-end" th:text="${#numbers.formatInteger(p.collected, 1, 'NONE')} + ' ₽'"></td>
+                <td class="text-end" th:text="${#numbers.formatInteger(p.spent, 1, 'NONE')} + ' ₽'"></td>
                 <td class="text-end fw-bold"
                     th:with="diff=${p.collected.subtract(p.spent)}"
                     th:classappend="${diff.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'balance-positive' : 'balance-negative'}"
-                    th:text="${diff} + ' ₽'"></td>
+                    th:text="${#numbers.formatInteger(diff, 1, 'NONE')} + ' ₽'"></td>
             </tr>
             <tr th:if="${periods.isEmpty()}"><td colspan="4" class="text-muted text-center">Пока нет событий</td></tr>
             </tbody>

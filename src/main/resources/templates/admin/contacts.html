@@ -18,7 +18,7 @@
                 <td th:text="${c.contactInfo}"></td>
                 <td th:text="${c.comment}"></td>
                 <td class="text-nowrap">
-                    <a class="btn btn-sm btn-outline-primary" th:href="@{'/admin/contacts/' + ${c.id} + '/edit'}">Изменить</a>
+                    <a class="btn btn-sm btn-outline-success" th:href="@{'/admin/contacts/' + ${c.id} + '/edit'}">Изменить</a>
                     <form th:action="@{'/admin/contacts/' + ${c.id} + '/delete'}" method="post" class="d-inline">
                         <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить?')">Удалить</button>
                     </form>
@@ -29,7 +29,7 @@
         </table>
     </div>
 
-    <a class="btn btn-primary" th:href="@{/admin/contacts/new}">+ Новый контакт</a>
+    <a class="btn btn-success" th:href="@{/admin/contacts/new}">+ Новый контакт</a>
 </div>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

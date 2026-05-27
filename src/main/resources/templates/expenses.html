@@ -17,7 +17,7 @@
                 <td th:text="${#temporals.format(e.date, 'dd.MM.yyyy')}"></td>
                 <td th:text="${e.comment}"></td>
                 <td th:text="${e.eventName}"></td>
-                <td class="text-end text-danger fw-bold" th:text="${e.amount} + ' ₽'"></td>
+                <td class="text-end text-danger fw-bold" th:text="${#numbers.formatInteger(e.amount, 1, 'NONE')} + ' ₽'"></td>
             </tr>
             <tr th:if="${expenses.isEmpty()}"><td colspan="4" class="text-muted text-center">Ничего не найдено</td></tr>
             </tbody>

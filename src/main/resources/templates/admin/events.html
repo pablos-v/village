@@ -15,14 +15,14 @@
             <tbody>
             <tr th:each="e : ${events}">
                 <td th:text="${e.name}"></td>
-                <td class="text-end" th:text="${e.cost} + ' ₽'"></td>
+                <td class="text-end" th:text="${#numbers.formatInteger(e.cost, 1, 'NONE')} + ' ₽'"></td>
             </tr>
             <tr th:if="${events.isEmpty()}"><td colspan="2" class="text-muted text-center">Пока нет событий</td></tr>
             </tbody>
         </table>
     </div>
 
-    <a class="btn btn-primary" th:href="@{/admin/events/new}">+ Новое событие</a>
+    <a class="btn btn-success" th:href="@{/admin/events/new}">+ Новое событие</a>
 </div>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

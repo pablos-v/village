@@ -10,7 +10,7 @@
             <h2 class="card-title">💰 Текущий остаток</h2>
             <p class="display-4"
                th:classappend="${balance.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'balance-positive' : 'balance-negative'}"
-               th:text="${#numbers.formatDecimal(balance, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</p>
+               th:text="${#numbers.formatInteger(balance, 1, 'NONE')} + ' ₽'">0 ₽</p>
         </div>
     </div>
 
@@ -20,7 +20,7 @@
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between" th:each="p : ${recentPayments}">
                     <span><span th:text="${#temporals.format(p.date, 'dd.MM.yyyy')}"></span> — <span th:text="${p.address}"></span></span>
-                    <span class="text-success fw-bold" th:text="${p.amount} + ' ₽'"></span>
+                    <span class="text-success fw-bold" th:text="${#numbers.formatInteger(p.amount, 1, 'NONE')} + ' ₽'"></span>
                 </li>
                 <li class="list-group-item text-muted" th:if="${recentPayments.isEmpty()}">Пока нет поступлений</li>
             </ul>
@@ -31,7 +31,7 @@
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between" th:each="e : ${recentExpenses}">
                     <span><span th:text="${#temporals.format(e.date, 'dd.MM.yyyy')}"></span> — <span th:text="${e.comment}"></span></span>
-                    <span class="text-danger fw-bold" th:text="${e.amount} + ' ₽'"></span>
+                    <span class="text-danger fw-bold" th:text="${#numbers.formatInteger(e.amount, 1, 'NONE')} + ' ₽'"></span>
                 </li>
                 <li class="list-group-item text-muted" th:if="${recentExpenses.isEmpty()}">Пока нет расходов</li>
             </ul>
@@ -53,7 +53,7 @@
             <h3>🤖 AI-ассистент</h3>
             <textarea class="form-control mb-2" id="ai-input" rows="2"
                       placeholder="Например: какой остаток? кто сдал больше всех?"></textarea>
-            <button class="btn btn-primary" id="ai-send">Спросить</button>
+            <button class="btn btn-success" id="ai-send">Спросить</button>
             <div id="ai-history" class="mt-3"></div>
         </div>
     </div>
