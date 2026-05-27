@@ -7,11 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.village.controller.AdminApiController;
+import ru.village.controller.AdminContactsApiController;
+import ru.village.controller.AiController;
+import ru.village.controller.PublicApiController;
 import ru.village.exception.EntityNotFoundException;
 import ru.village.exception.InsufficientBalanceException;
 
 /** Превращает исключения из REST-контроллеров в структурированный JSON-ответ. */
-@RestControllerAdvice(basePackages = "ru.village.controller")
+@RestControllerAdvice(assignableTypes = {
+        PublicApiController.class, AdminApiController.class,
+        AdminContactsApiController.class, AiController.class
+})
 @Slf4j
 public class GlobalExceptionHandler {
 
