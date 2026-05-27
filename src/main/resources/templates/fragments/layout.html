@@ -12,29 +12,46 @@
 </head>
 <body>
 
-<nav th:fragment="navbar" class="navbar navbar-expand-md navbar-light bg-light mb-3">
+<nav th:fragment="navbar" class="navbar navbar-expand-md navbar-light bg-light mb-3"
+     th:with="uri=${currentUri} ?: ''">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">🏠 Village</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/payments}">Поступления</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/expenses}">Расходы</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/history}">История</a></li>
-                <li class="nav-item" sec:authorize="hasAnyRole('OPERATOR','ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/payment/new}">+ Приход</a>
+            <ul class="navbar-nav me-auto nav-btns">
+                <li class="nav-item">
+                    <a class="nav-btn nav-btn--user" th:href="@{/}"
+                       th:classappend="${uri == '/'} ? 'active'">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-btn nav-btn--user" th:href="@{/payments}"
+                       th:classappend="${#strings.startsWith(uri, '/payments')} ? 'active'">Поступления</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-btn nav-btn--user" th:href="@{/expenses}"
+                       th:classappend="${#strings.startsWith(uri, '/expenses')} ? 'active'">Расходы</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-btn nav-btn--user" th:href="@{/history}"
+                       th:classappend="${#strings.startsWith(uri, '/history')} ? 'active'">История</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasAnyRole('OPERATOR','ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/expense/new}">+ Расход</a>
+                    <a class="nav-btn nav-btn--op" th:href="@{/admin/payment/new}"
+                       th:classappend="${#strings.startsWith(uri, '/admin/payment')} ? 'active'">+ Приход</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasAnyRole('OPERATOR','ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/events}">События</a>
+                    <a class="nav-btn nav-btn--op" th:href="@{/admin/expense/new}"
+                       th:classappend="${#strings.startsWith(uri, '/admin/expense')} ? 'active'">+ Расход</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('OPERATOR','ADMIN')">
+                    <a class="nav-btn nav-btn--op" th:href="@{/admin/events}"
+                       th:classappend="${#strings.startsWith(uri, '/admin/events')} ? 'active'">События</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/contacts}">Контакты</a>
+                    <a class="nav-btn nav-btn--admin" th:href="@{/admin/contacts}"
+                       th:classappend="${#strings.startsWith(uri, '/admin/contacts')} ? 'active'">Полезные контакты</a>
                 </li>
             </ul>
             <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="d-flex align-items-center">
