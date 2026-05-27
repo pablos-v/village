@@ -10,4 +10,5 @@ public interface IPaymentService {
     List<PaymentResponse> recent(int limit);
     Page<PaymentResponse> findAll(Integer year, Integer month, Pageable pageable);
     PaymentResponse create(CreatePaymentRequest req);
+    List<Integer> availableYears();
 }

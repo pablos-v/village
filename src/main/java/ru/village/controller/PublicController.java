@@ -1,5 +1,10 @@
 package ru.village.controller;
 
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +30,14 @@ public class PublicController {
     private final IHistoryService historyService;
     private final IUsefulContactInfoService contactService;
 
+    /** Номер месяца → русское название, по порядку. */
+    private static final Map<Integer, String> MONTHS = new LinkedHashMap<>();
+    static {
+        String[] names = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+                "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+        for (int i = 0; i < 12; i++) MONTHS.put(i + 1, names[i]);
+    }
+
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("balance", balanceService.currentBalance());
@@ -41,9 +54,20 @@ public class PublicController {
             @PageableDefault(size = 50) Pageable pageable,
             Model model
     ) {
+        LocalDate now = LocalDate.now();
+        if (year == null) year = now.getYear();
+        if (month == null) month = now.getMonthValue();
+
+        // годы с платежами + всегда текущий, по убыванию
+        TreeSet<Integer> years = new TreeSet<>(Comparator.reverseOrder());
+        years.addAll(paymentService.availableYears());
+        years.add(now.getYear());
+
         model.addAttribute("payments", paymentService.findAll(year, month, pageable));
         model.addAttribute("year", year);
         model.addAttribute("month", month);
+        model.addAttribute("years", years);
+        model.addAttribute("months", MONTHS);
         return "payments";
     }
 

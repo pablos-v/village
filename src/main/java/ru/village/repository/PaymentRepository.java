@@ -23,4 +23,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.event.id = :eventId")
     java.math.BigDecimal sumByEvent(@Param("eventId") Long eventId);
+
+    /** Годы, за которые есть платежи, по убыванию. */
+    @Query("SELECT DISTINCT CAST(EXTRACT(YEAR FROM p.paydate) AS integer) FROM Payment p ORDER BY 1 DESC")
+    List<Integer> findDistinctYears();
 }

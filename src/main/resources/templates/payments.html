@@ -10,14 +10,20 @@
     <form method="get" th:action="@{/payments}" class="row g-2 align-items-end mb-3">
         <div class="col-auto">
             <label class="form-label">Год</label>
-            <input type="number" name="year" class="form-control" th:value="${year}"/>
+            <select name="year" class="form-select">
+                <option th:each="y : ${years}" th:value="${y}" th:text="${y}"
+                        th:selected="${y == year}"></option>
+            </select>
         </div>
         <div class="col-auto">
             <label class="form-label">Месяц</label>
-            <input type="number" name="month" min="1" max="12" class="form-control" th:value="${month}"/>
+            <select name="month" class="form-select">
+                <option th:each="m : ${months}" th:value="${m.key}" th:text="${m.value}"
+                        th:selected="${m.key == month}"></option>
+            </select>
         </div>
         <div class="col-auto">
-            <button class="btn btn-primary">Фильтр</button>
+            <button class="btn btn-success">Фильтр</button>
         </div>
     </form>
 
@@ -31,7 +37,7 @@
                 <td th:text="${#temporals.format(p.date, 'dd.MM.yyyy')}"></td>
                 <td th:text="${p.address}"></td>
                 <td th:text="${p.eventName}"></td>
-                <td class="text-end text-success fw-bold" th:text="${p.amount} + ' ₽'"></td>
+                <td class="text-end text-success fw-bold" th:text="${#numbers.formatInteger(p.amount, 1, 'NONE')} + ' ₽'"></td>
             </tr>
             <tr th:if="${payments.isEmpty()}"><td colspan="4" class="text-muted text-center">Ничего не найдено</td></tr>
             </tbody>

@@ -60,4 +60,10 @@ public class PaymentService implements IPaymentService {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         return auth == null ? "system" : auth.getName();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> availableYears() {
+        return paymentRepository.findDistinctYears();
+    }
 }
