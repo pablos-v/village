@@ -1,24 +1,28 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Новое событие</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Новое событие')}"></head>
 <body>
-<h1>Новое событие</h1>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<form th:action="@{/admin/events}" th:object="${form}" method="post">
-    <div>
-        <label>Название: <input type="text" th:field="*{name}"/></label>
-        <span th:errors="*{name}" style="color:red;"></span>
-    </div>
-    <div>
-        <label>Сумма: <input type="number" step="0.01" th:field="*{cost}"/></label>
-        <span th:errors="*{cost}" style="color:red;"></span>
-    </div>
-    <button>Сохранить</button>
-</form>
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3">Новое событие</h1>
 
-<p><a th:href="@{/admin/events}">← Назад</a></p>
+    <form th:action="@{/admin/events}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Название</label>
+            <input type="text" th:field="*{name}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{name}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Сумма</label>
+            <input type="number" step="0.01" th:field="*{cost}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{cost}"></div>
+        </div>
+        <button class="btn btn-primary">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/admin/events}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

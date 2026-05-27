@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Village — вход</title>
-</head>
+<head th:replace="~{fragments/layout :: head('Village — вход')}"></head>
 <body>
-<h1>Village — вход в систему</h1>
+<div class="container" style="max-width: 420px;">
+    <h1 class="my-4 text-center">Village</h1>
 
-<div th:if="${param.error}" style="color:red;">Неверный логин или пароль</div>
-<div th:if="${param.logout}" style="color:green;">Вы вышли из системы</div>
+    <div th:if="${param.error}" class="alert alert-danger">Неверный логин или пароль</div>
+    <div th:if="${param.logout}" class="alert alert-success">Вы вышли из системы</div>
 
-<form th:action="@{/login}" method="post">
-    <div>
-        <label>Логин: <input type="text" name="username" required/></label>
+    <div class="card">
+        <div class="card-body">
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Логин</label>
+                    <input type="text" name="username" class="form-control" required autofocus/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="password" class="form-control" required/>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Войти</button>
+            </form>
+        </div>
     </div>
-    <div>
-        <label>Пароль: <input type="password" name="password" required/></label>
-    </div>
-    <div>
-        <button type="submit">Войти</button>
-    </div>
-</form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

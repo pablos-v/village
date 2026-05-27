@@ -1,26 +1,33 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>История</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('История')}"></head>
 <body>
-<h1>История по периодам</h1>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<table>
-    <thead>
-    <tr><th>Событие</th><th>Собрано</th><th>Потрачено</th><th>Остаток</th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="p : ${periods}">
-        <td th:text="${p.eventName}"></td>
-        <td th:text="${p.collected}"></td>
-        <td th:text="${p.spent}"></td>
-        <td th:text="${p.collected.subtract(p.spent)}"></td>
-    </tr>
-    </tbody>
-</table>
+<div class="container">
+    <h1 class="mb-3">История по периодам</h1>
 
-<p><a th:href="@{/}">← Назад на главную</a></p>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr><th>Событие</th><th class="text-end">Собрано</th><th class="text-end">Потрачено</th><th class="text-end">Остаток</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${periods}">
+                <td th:text="${p.eventName}"></td>
+                <td class="text-end" th:text="${p.collected} + ' ₽'"></td>
+                <td class="text-end" th:text="${p.spent} + ' ₽'"></td>
+                <td class="text-end fw-bold"
+                    th:with="diff=${p.collected.subtract(p.spent)}"
+                    th:classappend="${diff.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'balance-positive' : 'balance-negative'}"
+                    th:text="${diff} + ' ₽'"></td>
+            </tr>
+            <tr th:if="${periods.isEmpty()}"><td colspan="4" class="text-muted text-center">Пока нет событий</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

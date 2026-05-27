@@ -1,32 +1,37 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Контакты</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Контакты')}"></head>
 <body>
-<h1>Полезная информация — управление</h1>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<table>
-    <thead>
-    <tr><th>Тип</th><th>Контакт</th><th>Примечание</th><th></th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="c : ${contacts}">
-        <td th:text="${c.type}"></td>
-        <td th:text="${c.contactInfo}"></td>
-        <td th:text="${c.comment}"></td>
-        <td>
-            <a th:href="@{'/admin/contacts/' + ${c.id} + '/edit'}">Edit</a>
-            <form th:action="@{'/admin/contacts/' + ${c.id} + '/delete'}" method="post" style="display:inline;">
-                <button type="submit" onclick="return confirm('Удалить?')">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div class="container">
+    <h1 class="mb-3">Полезная информация — управление</h1>
 
-<p><a th:href="@{/admin/contacts/new}">+ Новый контакт</a></p>
-<p><a th:href="@{/}">← На главную</a></p>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+            <tr><th>Тип</th><th>Контакт</th><th>Примечание</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${contacts}">
+                <td th:text="${c.type}"></td>
+                <td th:text="${c.contactInfo}"></td>
+                <td th:text="${c.comment}"></td>
+                <td class="text-nowrap">
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{'/admin/contacts/' + ${c.id} + '/edit'}">Изменить</a>
+                    <form th:action="@{'/admin/contacts/' + ${c.id} + '/delete'}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить?')">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${contacts.isEmpty()}"><td colspan="4" class="text-muted text-center">Пока нет контактов</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="btn btn-primary" th:href="@{/admin/contacts/new}">+ Новый контакт</a>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

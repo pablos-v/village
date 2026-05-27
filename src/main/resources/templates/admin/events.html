@@ -1,25 +1,30 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>События</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('События')}"></head>
 <body>
-<h1>События (платёжные периоды)</h1>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<table>
-    <thead>
-    <tr><th>Название</th><th>Ожидаемая сумма</th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="e : ${events}">
-        <td th:text="${e.name}"></td>
-        <td th:text="${e.cost}"></td>
-    </tr>
-    </tbody>
-</table>
+<div class="container">
+    <h1 class="mb-3">События (платёжные периоды)</h1>
 
-<p><a th:href="@{/admin/events/new}">+ Новое событие</a></p>
-<p><a th:href="@{/}">← На главную</a></p>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr><th>Название</th><th class="text-end">Ожидаемая сумма</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${events}">
+                <td th:text="${e.name}"></td>
+                <td class="text-end" th:text="${e.cost} + ' ₽'"></td>
+            </tr>
+            <tr th:if="${events.isEmpty()}"><td colspan="2" class="text-muted text-center">Пока нет событий</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="btn btn-primary" th:href="@{/admin/events/new}">+ Новое событие</a>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

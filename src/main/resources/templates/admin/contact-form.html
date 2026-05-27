@@ -1,28 +1,33 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Контакт</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Контакт')}"></head>
 <body>
-<h1>Контакт</h1>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<form th:action="@{${action}}" th:object="${form}" method="post">
-    <div>
-        <label>Тип: <input type="text" th:field="*{type}" maxlength="100"/></label>
-        <span th:errors="*{type}" style="color:red;"></span>
-    </div>
-    <div>
-        <label>Контакт: <textarea th:field="*{contactInfo}" rows="3" cols="60"></textarea></label>
-        <span th:errors="*{contactInfo}" style="color:red;"></span>
-    </div>
-    <div>
-        <label>Примечание: <input type="text" th:field="*{comment}" maxlength="500"/></label>
-        <span th:errors="*{comment}" style="color:red;"></span>
-    </div>
-    <button>Сохранить</button>
-</form>
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3">Контакт</h1>
 
-<p><a th:href="@{/admin/contacts}">← Назад</a></p>
+    <form th:action="@{${action}}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Тип</label>
+            <input type="text" th:field="*{type}" class="form-control" maxlength="100"/>
+            <div class="text-danger small" th:errors="*{type}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Контакт</label>
+            <textarea th:field="*{contactInfo}" class="form-control" rows="3"></textarea>
+            <div class="text-danger small" th:errors="*{contactInfo}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Примечание</label>
+            <input type="text" th:field="*{comment}" class="form-control" maxlength="500"/>
+            <div class="text-danger small" th:errors="*{comment}"></div>
+        </div>
+        <button class="btn btn-primary">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/admin/contacts}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>
