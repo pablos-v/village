@@ -47,6 +47,21 @@ public class AiChatService {
             - payment (id, hh_id, paydate, evnt_id, amount)
             - expense (id, event_id, amount, date, comment)
             - balance_view (amount) — текущий остаток (SUM payments − SUM expenses)
+
+            КАК ПОНИМАТЬ «КТО/ДОМ/АДРЕС» (важно):
+            - Деньги сдаёт ДОМ (домохозяйство, household), а НЕ отдельный человек.
+              Вопросы «кто сдал», «какой дом», «какая семья», «какой адрес» — все про household.
+              НЕ используй таблицу inhabitant для таких вопросов (жители — это люди в доме,
+              они не привязаны к платежам).
+            - Дом всегда идентифицируется ПОЛНЫМ адресом = улица + номер дома.
+              В БД они разнесены (street.name и bldng.number), но для человека это единая
+              сущность. Никогда не отвечай одним номером дома.
+            - Чтобы получить адрес дома, делай JOIN: payment → household (hh_id)
+              → address (addrss_id) → street (street_id) и bldng (bldng_id), и собирай
+              адрес как: CONCAT('ул. ', street.name, ', д. ', bldng.number) AS address.
+              В ответе показывай этот полный адрес целиком, например «ул. Розовая, д. 340».
+            - «сдал больше всех» = наибольшая СУММА платежей: SUM(payment.amount), GROUP BY дом.
+            - «сдавал чаще всех» = наибольшее КОЛИЧЕСТВО платежей: COUNT(*), GROUP BY дом.
             """;
 
     @Tool(description = "Выполнить SELECT-запрос к схеме village и вернуть строки. " +

@@ -39,4 +39,23 @@ class HouseholdServiceTest extends IntegrationTestBase {
 
         assertThat(householdService.searchAddresses("")).hasSizeGreaterThanOrEqualTo(1);
     }
+
+    @Test
+    void searchAddressesByHouseNumber() {
+        Street green = streetRepo.save(new Street(null, "Зелёная"));
+        Street blue = streetRepo.save(new Street(null, "Голубая"));
+        hhRepo.save(new Household(null, addressRepo.save(
+                new Address(null, green, bldngRepo.save(new Bldng(null, "316", null))))));
+        hhRepo.save(new Household(null, addressRepo.save(
+                new Address(null, blue, bldngRepo.save(new Bldng(null, "5", null))))));
+
+        // поиск по номеру дома
+        var byNumber = householdService.searchAddresses("316");
+        assertThat(byNumber).hasSize(1);
+        assertThat(byNumber.get(0).label()).isEqualTo("ул. Зелёная, д. 316");
+
+        // поиск по склеенной строке улица+дом
+        var byFull = householdService.searchAddresses("зелёная 316");
+        assertThat(byFull).hasSize(1);
+    }
 }
