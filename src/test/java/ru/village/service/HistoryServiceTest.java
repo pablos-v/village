@@ -35,7 +35,8 @@ class HistoryServiceTest extends IntegrationTestBase {
         paymentRepo.save(new Payment(null, hh, LocalDate.now(), ev2, new BigDecimal("400")));
 
         var periods = historyService.periods();
-        assertThat(periods).hasSize(2);
+        // >= 2: помимо созданных здесь событий есть seed-события (Liquibase 006)
+        assertThat(periods).hasSizeGreaterThanOrEqualTo(2);
         var march = periods.stream().filter(p -> p.eventName().equals("март")).findFirst().orElseThrow();
         assertThat(march.collected()).isEqualByComparingTo("800.00");
         assertThat(march.spent()).isEqualByComparingTo("200.00");
