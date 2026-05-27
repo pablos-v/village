@@ -53,9 +53,9 @@ public class AiChatService {
             "Запрещены DELETE/INSERT/UPDATE и любые DDL — будут заблокированы валидатором.")
     public List<Map<String, Object>> executeSql(
             @ToolParam(description = "SQL SELECT-запрос по таблицам схемы village") String sql) {
-        validator.validate(sql);
-        log.info("AI SQL: {}", sql);
-        return aiJdbcTemplate.queryForList(sql);
+        String safe = validator.validate(sql);
+        log.info("AI SQL: {}", safe);
+        return aiJdbcTemplate.queryForList(safe);
     }
 
     public String chat(String userMessage) {

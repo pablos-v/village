@@ -2,6 +2,7 @@ package ru.village.service.ai;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -13,6 +14,20 @@ class SqlSecurityValidatorTest {
     void allowsSimpleSelect() {
         assertThatCode(() -> validator.validate("SELECT SUM(amount) FROM payment"))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void stripsTrailingSemicolon() {
+        // LLM часто добавляет ; в конце — обрезаем, не блокируем
+        assertThat(validator.validate("SELECT COUNT(*) FROM payment;"))
+                .isEqualTo("SELECT COUNT(*) FROM payment");
+    }
+
+    @Test
+    void midStatementSemicolonStillRejected() {
+        // обрезается только хвостовой ; — инъекция в середине остаётся запрещённой
+        assertThatThrownBy(() -> validator.validate("SELECT 1; DROP TABLE x;"))
+                .isInstanceOf(SecurityException.class);
     }
 
     @Test

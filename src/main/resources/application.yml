@@ -7,7 +7,7 @@ spring:
       base-url: https://openrouter.ai/api
       chat:
         options:
-          model: ${AI_MODEL:openrouter/arcee-ai/trinity-large-preview:free}
+          model: ${AI_MODEL:qwen/qwen3-235b-a22b-2507}
   jpa:
     hibernate:
       ddl-auto: none
