@@ -32,6 +32,18 @@ public class AdminController {
     private final IExpenseService expenseService;
     private final IUsefulContactInfoService contactService;
 
+    /** Событие, предвыбираемое в формах прихода/расхода по умолчанию. */
+    private static final String DEFAULT_EVENT_NAME = "На общие нужды";
+
+    /** id события по умолчанию (или null, если его нет). */
+    private Long defaultEventId() {
+        return eventService.findAll().stream()
+                .filter(e -> DEFAULT_EVENT_NAME.equals(e.name()))
+                .map(ru.village.controller.dto.response.EventResponse::id)
+                .findFirst()
+                .orElse(null);
+    }
+
     @GetMapping("/events")
     public String events(Model model) {
         model.addAttribute("events", eventService.findAll());
@@ -53,7 +65,7 @@ public class AdminController {
 
     @GetMapping("/payment/new")
     public String newPaymentForm(Model model) {
-        model.addAttribute("form", new CreatePaymentRequest(null, null, null, LocalDate.now()));
+        model.addAttribute("form", new CreatePaymentRequest(defaultEventId(), null, null, LocalDate.now()));
         model.addAttribute("events", eventService.findAll());
         return "admin/payment-new";
     }
@@ -72,7 +84,7 @@ public class AdminController {
 
     @GetMapping("/expense/new")
     public String newExpenseForm(Model model) {
-        model.addAttribute("form", new CreateExpenseRequest(null, null, LocalDate.now(), ""));
+        model.addAttribute("form", new CreateExpenseRequest(defaultEventId(), null, LocalDate.now(), ""));
         model.addAttribute("events", eventService.findAll());
         return "admin/expense-new";
     }

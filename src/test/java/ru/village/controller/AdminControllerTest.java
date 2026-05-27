@@ -9,7 +9,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.village.IntegrationTestBase;
+import ru.village.controller.dto.request.CreatePaymentRequest;
+import ru.village.repository.EventRepository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminControllerTest extends IntegrationTestBase {
 
     @Autowired WebApplicationContext ctx;
+    @Autowired EventRepository eventRepo;
     MockMvc mockMvc;
 
     @BeforeEach
@@ -70,6 +74,18 @@ class AdminControllerTest extends IntegrationTestBase {
                 .andExpect(view().name("admin/payment-new"))
                 .andExpect(model().attributeExists("form"))
                 .andExpect(model().attributeExists("events"));
+    }
+
+    @Test
+    @WithMockUser(roles = "OPERATOR")
+    void newPaymentFormPreselectsDefaultEvent() throws Exception {
+        Long expected = eventRepo.findAll().stream()
+                .filter(e -> "На общие нужды".equals(e.getName()))
+                .findFirst().orElseThrow().getId();
+
+        var result = mockMvc.perform(get("/admin/payment/new")).andReturn();
+        var form = (CreatePaymentRequest) result.getModelAndView().getModel().get("form");
+        assertThat(form.eventId()).isEqualTo(expected);
     }
 
     @Test
