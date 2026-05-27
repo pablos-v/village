@@ -17,6 +17,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @Transactional
 public abstract class IntegrationTestBase {
 
+    @SuppressWarnings("resource") // singleton container живёт на всю JVM-сессию, закрывает Ryuk при выходе
     @ServiceConnection
     static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("village")

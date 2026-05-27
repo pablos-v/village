@@ -1,0 +1,16 @@
+:root {
+    --balance-positive: #198754;
+    --balance-negative: #dc3545;
+}
+
+.balance-positive { color: var(--balance-positive); }
+.balance-negative { color: var(--balance-negative); }
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .display-4 { font-size: 2.5rem; }
+    .navbar-brand { font-size: 1rem; }
+    .btn { padding: 0.5rem 1rem; font-size: 1.1rem; }   /* крупные кнопки под пальцы */
+    input, textarea, select { font-size: 16px; }         /* iOS не зумит при >= 16px */
+}
