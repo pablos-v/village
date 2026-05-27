@@ -32,6 +32,6 @@ class LogoutTest extends IntegrationTestBase {
     void logoutRedirectsToLoginWithLogoutParam() throws Exception {
         mockMvc.perform(post("/logout").with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login?logout"));
+                .andExpect(redirectedUrl("/welcome?logout"));
     }
 }

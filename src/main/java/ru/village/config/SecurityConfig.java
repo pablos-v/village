@@ -45,7 +45,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/login", "/css/**", "/js/**", "/webjars/**").permitAll()
+                        .requestMatchers("/actuator/health", "/welcome", "/login-operator",
+                                "/css/**", "/js/**", "/webjars/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/admin/contacts/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasAnyRole("OPERATOR", "ADMIN")
@@ -54,11 +55,13 @@ public class SecurityConfig {
                         .anyRequest().hasAnyRole("USER", "OPERATOR", "ADMIN")
                 )
                 .formLogin(form -> form
-                        .loginPage("/login").permitAll()
+                        .loginPage("/welcome")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout").permitAll()
+                        .logoutSuccessUrl("/welcome?logout").permitAll()
                 )
                 .build();
     }

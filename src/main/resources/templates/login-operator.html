@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Village — вход')}"></head>
+<head th:replace="~{fragments/layout :: head('Village — вход для оператора')}"></head>
 <body>
 <div class="container" style="max-width: 420px;">
-    <h1 class="my-4 text-center">Village</h1>
+    <h1 class="my-4 text-center">Вход для оператора</h1>
 
     <div th:if="${param.error}" class="alert alert-danger">Неверный логин или пароль</div>
-    <div th:if="${param.logout}" class="alert alert-success">Вы вышли из системы</div>
 
     <div class="card">
         <div class="card-body">
@@ -23,6 +22,10 @@
             </form>
         </div>
     </div>
+
+    <p class="text-center mt-3">
+        <a class="small text-muted" th:href="@{/welcome}">← Вход для жителей</a>
+    </p>
 </div>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

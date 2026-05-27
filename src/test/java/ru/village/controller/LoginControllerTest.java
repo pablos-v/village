@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.village.IntegrationTestBase;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,10 +29,21 @@ class LoginControllerTest extends IntegrationTestBase {
 
     @Test
     @WithAnonymousUser
-    void loginPageIsAccessible() throws Exception {
-        mockMvc.perform(get("/login"))
+    void welcomeShowsPasswordFieldForResidents() throws Exception {
+        mockMvc.perform(get("/welcome"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("text/html"))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Войти")));
+                .andExpect(content().string(containsString("Пароль доступа")))
+                // витрина подставляет username=user скрытым полем
+                .andExpect(content().string(containsString("value=\"user\"")));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void operatorLoginPageHasFullForm() throws Exception {
+        mockMvc.perform(get("/login-operator"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Логин")))
+                .andExpect(content().string(containsString("Вход для оператора")));
     }
 }
