@@ -57,11 +57,16 @@ docker run --rm hello-world
 
 ## 3. Структура проекта
 
+`git clone .` отказывается клонировать в непустой каталог, поэтому
+сначала клонируем, потом создаём подпапки.
+
 ```bash
-mkdir -p /opt/village/backups
+mkdir -p /opt/village
 cd /opt/village
 git clone https://github.com/pablos-v/village.git .
+mkdir -p backups
 chmod +x scripts/*.sh
+chmod 700 /opt/village /opt/village/backups
 ```
 
 ## 4. `.env` с секретами
