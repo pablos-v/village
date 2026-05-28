@@ -15,7 +15,7 @@
 <nav th:fragment="navbar" class="navbar navbar-expand-md navbar-light bg-light mb-3"
      th:with="uri=${currentUri} ?: ''">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/}">🏠 Village</a>
+        <a class="navbar-brand" th:href="@{/}">🏠 <span th:text="${brand} ?: 'Village'">Village</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -63,7 +63,7 @@
 </nav>
 
 <footer th:fragment="footer" class="mt-5 py-3 text-center text-muted">
-    <small>Village — учёт сборов на нашей улице</small>
+    <small th:text="${tagline} ?: 'Village — учёт сборов на нашей улице'">Village — учёт сборов на нашей улице</small>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </footer>
 

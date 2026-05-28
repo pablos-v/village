@@ -28,14 +28,14 @@
       });
       thinking.remove();
       if (!resp.ok) {
-        appendMessage('AI', 'Ошибка: HTTP ' + resp.status);
+        appendMessage('ИИ', 'Ошибка: HTTP ' + resp.status);
         return;
       }
       const data = await resp.json();
-      appendMessage('AI', data.response || 'Не удалось получить ответ');
+      appendMessage('ИИ', data.response || 'Не удалось получить ответ');
     } catch (e) {
       thinking.remove();
-      appendMessage('AI', 'Ошибка: ' + e.message);
+      appendMessage('ИИ', 'Ошибка: ' + e.message);
     } finally {
       sendBtn.disabled = false;
     }
@@ -59,7 +59,7 @@
     div.className = 'mb-2 text-muted d-flex align-items-center';
     div.innerHTML =
       '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
-      '<span>AI думает…</span>';
+      '<span>ИИ думает…</span>';
     history.appendChild(div);
     div.scrollIntoView({ block: 'nearest' });
     return div;

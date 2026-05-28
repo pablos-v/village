@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/layout :: head('Village — вход')}"></head>
 <body>
 <div class="container" style="max-width: 420px;">
-    <h1 class="my-4 text-center">Village</h1>
+    <h1 class="my-4 text-center" th:text="${brand} ?: 'Village'">Village</h1>
 
     <div th:if="${param.error}" class="alert alert-danger">Неверный пароль</div>
     <div th:if="${param.logout}" class="alert alert-success">Вы вышли из системы</div>

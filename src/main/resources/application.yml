@@ -32,6 +32,9 @@ app:
     url: ${SPRING_AI_DATASOURCE_URL}
     username: ${SPRING_AI_DATASOURCE_USERNAME}
     password: ${SPRING_AI_DATASOURCE_PASSWORD}
+  branding:
+    brand: ${APP_BRAND:Village}
+    tagline: ${APP_TAGLINE:Village — учёт сборов на нашей улице}
 
 management:
   endpoints:
