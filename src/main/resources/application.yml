@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: village
+  ai:
+    openai:
+      api-key: ${OPENROUTER_API_KEY:dummy-bootstrap-key}
+      base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model: ${AI_MODEL:qwen/qwen3-235b-a22b-2507}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate.default_schema: village
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: village
+    liquibase-schema: public
+    parameters:
+      ai.role.password: ${AI_ROLE_PASSWORD:village_ai_dev}
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+
+app:
+  ai-datasource:
+    url: ${SPRING_AI_DATASOURCE_URL}
+    username: ${SPRING_AI_DATASOURCE_USERNAME}
+    password: ${SPRING_AI_DATASOURCE_PASSWORD}
+  branding:
+    brand: ${APP_BRAND:Village}
+    tagline: ${APP_TAGLINE:Village — учёт сборов на нашей улице}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+    info:
+      enabled: true
+  info:
+    git:
+      mode: simple
+
+server:
+  port: 8080

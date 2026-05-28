@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Новый приход')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3">Внести приход</h1>
+
+    <form th:action="@{/admin/payment}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Событие</label>
+            <select th:field="*{eventId}" class="form-select">
+                <option th:each="e : ${events}" th:value="${e.id}"
+                        th:text="${e.name + ' (' + e.cost + ' ₽)'}"></option>
+            </select>
+            <div class="text-danger small" th:errors="*{eventId}"></div>
+        </div>
+
+        <div class="mb-3 position-relative">
+            <label class="form-label">Адрес</label>
+            <input type="text" class="form-control" id="address-search"
+                   placeholder="Укажите адрес" autocomplete="off"/>
+            <input type="hidden" th:field="*{householdId}" id="household-id"/>
+            <ul class="dropdown-menu w-100" id="address-suggestions"
+                style="max-height: 240px; overflow-y: auto;"></ul>
+            <div class="text-danger small" th:errors="*{householdId}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Сумма</label>
+            <input type="number" step="1" min="0" th:field="*{amount}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{amount}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Дата</label>
+            <input type="date" th:field="*{date}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{date}"></div>
+        </div>
+
+        <button class="btn btn-success">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/address-autocomplete.js}" defer></script>
+<script th:src="@{/js/date-picker.js}" defer></script>
+</body>
+</html>

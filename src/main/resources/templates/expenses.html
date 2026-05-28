@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Расходы')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h1 class="mb-3">Все расходы</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr><th>Дата</th><th>Комментарий</th><th>Событие</th><th class="text-end">Сумма</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${expenses.content}">
+                <td th:text="${#temporals.format(e.date, 'dd.MM.yyyy')}"></td>
+                <td th:text="${e.comment}"></td>
+                <td th:text="${e.eventName}"></td>
+                <td class="text-end text-danger fw-bold" th:text="${#numbers.formatInteger(e.amount, 1, 'NONE')} + ' ₽'"></td>
+            </tr>
+            <tr th:if="${expenses.isEmpty()}"><td colspan="4" class="text-muted text-center">Ничего не найдено</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="text-muted">
+        Страница <span th:text="${expenses.number + 1}"></span> из <span th:text="${expenses.totalPages}"></span>
+    </p>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

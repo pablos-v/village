@@ -33,7 +33,7 @@ ru.village/
 ├── service/                             # Интерфейс + Impl
 │   ├── PaymentService                   # Платежи (CRUD, фильтры, последние)
 │   ├── ExpenseService                   # Расходы (CRUD)
-│   ├── BalanceService                   # Чтение из balance_mv
+│   ├── BalanceService                   # Чтение из VIEW balance_view
 │   ├── HouseholdService                 # Адреса для выпадающего списка
 │   ├── EventService                     # События/периоды (CRUD)
 │   ├── ContactInfoService               # Полезные контакты (CRUD)
@@ -43,10 +43,10 @@ ru.village/
 │   ├── Street
 │   ├── Building
 │   ├── Address
-│   ├── Household
-│   ├── Inhabitant
+│   ├── Household                        # без master_inh_id
+│   ├── Inhabitant                       # + is_master boolean
 │   ├── Event
-│   ├── Payment                          # + amount
+│   ├── Payment                          # + amount, + event FK
 │   ├── Expense                          # + event_id FK
 │   └── UsefulContactInfo
 ├── repository/                          # Spring Data JPA
@@ -64,9 +64,28 @@ ru.village/
 |------|-------|-----------|
 | ADMIN | Полный доступ | Все |
 | OPERATOR | Внесение приходов/расходов, управление событиями | POST `/api/payments`, POST `/api/expenses`, POST `/api/events`, `/admin/**` |
-| USER | Один аккаунт, только чтение | GET `/`, `/payments`, `/expenses`, `/history`, GET `/api/**` |
+| USER | Один общий аккаунт, только чтение (защита от индексации, не разграничение) | GET `/`, `/payments`, `/expenses`, `/history`, GET `/api/**` |
 
 **Public (без логина):** статика (`/css/**`, `/js/**`), `/login`, `/actuator/health`
+
+### Модель аутентификации — сознательно упрощённая
+
+Три фиксированных аккаунта (по одному на роль) через `InMemoryUserDetailsManager`. Пароли — в `AppSecurityProperties`: дефолты в `application-dev.yml` / `application-test.yml`, в prod подтягиваются из env-переменных `APP_SECURITY_ADMIN_PASSWORD`, `APP_SECURITY_OPERATOR_PASSWORD`, `APP_SECURITY_USER_PASSWORD`.
+
+**Это финальный дизайн, а не временная заглушка.** Сознательно отказываемся от:
+
+| Чего нет | Почему не делаем |
+|----------|------------------|
+| Таблицы `app_user` с пер-юзерным хранением | Все жители посёлка логинятся под одним общим `user` — пер-юзерные аккаунты не нужны |
+| UI смены пароля и "забыли пароль" | Аккаунтов всего три, ротация = смена env-переменных при деплое (runbook) |
+| Audit-логов входов | Внутреннее доверенное сообщество, нет регуляторного требования |
+| UI управления ролями | Роли зашиты в код, новые не появляются |
+
+**Контекст решения:** Village — учётная система для одного СНТ/коттеджного посёлка. Доверенное сообщество ~десятков домохозяйств, не SaaS. Пер-юзерная identity-модель здесь — over-engineering: усложняет код, добавляет поверхность атаки (reset-токены, email-сервис), не решает реальной проблемы.
+
+**Когда пересматривать:** если проект выйдет за рамки одного посёлка (multi-tenant, SaaS, регуляторные требования по аудиту) — тогда заводим таблицу юзеров, JpaUserDetailsService, формы смены пароля. До тех пор `InMemoryUserDetailsManager` остаётся.
+
+**Ротация паролей в prod:** redeploy с новыми env-значениями. BCrypt хеши пересчитываются на старте приложения из plain-text паролей.
 
 ---
 
@@ -83,7 +102,7 @@ ru.village/
 | GET | `/api/payments/recent?limit=10` | Последние 10 поступлений |
 | GET | `/api/payments?page=0&size=50&year=2026&month=3` | Все платежи с пагинацией |
 | GET | `/api/expenses?page=0&size=50` | Все расходы с пагинацией |
-| GET | `/api/balance` | Текущий остаток (из balance_mv) |
+| GET | `/api/balance` | Текущий остаток (из VIEW `balance_view`) |
 | GET | `/api/history/periods` | История по периодам |
 | GET | `/api/contacts` | Полезная информация |
 | GET | `/api/addresses?q=зелёная` | Адреса для выпадающего списка (поиск по подстроке) |
@@ -142,37 +161,36 @@ ru.village/
 
 ## БД — итоговая схема
 
-### Существующие таблицы (без изменений)
+Все таблицы проекта создаются в схеме `village` (не `public`). Это обязательно для ограничения AI-ассистента — см. ниже.
+
+### Базовые таблицы
 
 | Таблица | Поля |
 |---------|------|
 | `street` | id, name |
 | `bldng` | id, number, dscrptn |
 | `address` | id, street_id FK, bldng_id FK |
-| `household` | id, master_inh_id FK, addrss_id FK |
-| `inhabitant` | id, name, phone, hh_id FK |
+| `household` | id, addrss_id FK |
+| `inhabitant` | id, name, phone, hh_id FK, is_master boolean |
 | `events` | id, name, cost |
+| `payment` | id, hh_id FK, paydate, evnt_id FK→events.id, **amount numeric** |
+| `expense` | id, event_id FK→events.id, amount numeric, date date, comment varchar |
+| `useful_contact_info` | id, type varchar, contact_info text, comment varchar |
 
-### Модифицируемые таблицы
+### Изменения относительно референсного dump'а ([DB.sql](DB.sql))
 
-| Таблица | Изменение |
-|---------|-----------|
-| `payment` | **+ `amount` numeric**, **+ `evnt_id` FK→events.id** |
+| Что | Как |
+|-----|-----|
+| `household.master_inh_id` | **удалено** — циклический FK с `inhabitant.hh_id` разорван |
+| `inhabitant.is_master` | **добавлено** (boolean) — мастер-житель домохозяйства определяется по этому флагу |
+| `payment.amount` | **добавлено** (numeric) — индивидуальная сумма платежа |
+| `payment.evnt_id` | **+ FK на events.id** |
 
-### Новые таблицы
-
-| Таблица | Поля |
-|---------|------|
-| `expense` | id identity, event_id FK→events.id, amount numeric, date date, comment varchar |
-| `useful_contact_info` | id identity, type varchar, contact_info text, comment varchar |
-
-### Materialized View
+### VIEW
 
 | Объект | Описание |
 |--------|----------|
-| `balance_mv` | `SUM(payment.amount) - SUM(expense.amount)`, триггеры на INSERT/UPDATE/DELETE |
-
-После ручных правок в БД: `REFRESH MATERIALIZED VIEW balance_mv;`
+| `balance_view` | Обычный VIEW: `SELECT SUM(payment.amount) - SUM(expense.amount)`. Materialized View с триггерами **не используется** — для одного посёлка обычный VIEW отрабатывает за миллисекунды, а MV блокировал бы каждый INSERT/UPDATE/DELETE. |
 
 ### Формат адреса
 
@@ -187,9 +205,11 @@ street.name || ', д. ' || bldng.number
 
 Подробное описание: [INTERFACE.md](INTERFACE.md) → раздел "Text-to-SQL с валидацией"
 
-**Схема работы:** Пользователь → Spring AI → генерация SQL → валидация (только SELECT) → выполнение → форматирование ответа
+**Схема работы:** Пользователь → Spring AI → генерация SQL → валидация (только SELECT + только схема `village`) → выполнение → форматирование ответа
 
-**System Prompt** содержит актуальную структуру БД с правильными именами таблиц и полей.
+**Уровни защиты:** отдельная роль БД с GRANT SELECT только на схему `village` (никакого `pg_catalog`/`information_schema`), `search_path = village`, statement_timeout, валидация SQL в Java, system prompt. Подробности — [README.md](README.md) → "AI Ассистент".
+
+**Зависимости:** `org.springframework.ai:spring-ai-starter-model-openai` + BOM `org.springframework.ai:spring-ai-bom`. Для OpenRouter переопределяется `spring.ai.openai.base-url` в application.yaml.
 
 ---
 

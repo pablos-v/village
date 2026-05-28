@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    show-sql: false
+logging:
+  level:
+    ru.village: INFO
+
+app:
+  security:
+    admin-password: ${APP_SECURITY_ADMIN_PASSWORD}
+    operator-password: ${APP_SECURITY_OPERATOR_PASSWORD}
+    user-password: ${APP_SECURITY_USER_PASSWORD}

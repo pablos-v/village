@@ -1,0 +1,83 @@
+:root {
+    --balance-positive: #198754;
+    --balance-negative: #dc3545;
+}
+
+.balance-positive { color: var(--balance-positive); }
+.balance-negative { color: var(--balance-negative); }
+
+/* ===== Кнопки навигации ===== */
+/* Единая зелёная гамма. Неактивные — контурные (рамка + цветной текст),
+   активная — залита. Роли различаются оттенком зелёного. */
+.nav-btns { gap: .4rem; }
+
+.nav-btn {
+    position: relative;
+    display: inline-block;
+    padding: .45rem 1.05rem;
+    border-radius: .45rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid var(--nav-c);
+    color: var(--nav-c);
+    background: transparent;
+    transition: background-color .15s ease, color .15s ease, transform .12s ease;
+}
+.nav-btn:hover {
+    background: color-mix(in srgb, var(--nav-c) 12%, transparent);
+    transform: translateY(-1px);
+}
+.nav-btn.active {
+    background: var(--nav-c);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* подсветка-полоса, «стекающая» вниз от активной кнопки */
+.nav-btn.active::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: -.5rem;
+    height: 4px;
+    border-radius: 2px 2px 0 0;
+    background: var(--nav-c);
+}
+
+/* оттенки зелёного по ролям */
+.nav-btn--user  { --nav-c: #198754; }  /* обычный — success green */
+.nav-btn--op    { --nav-c: #0f766e; }  /* оператор — teal */
+.nav-btn--admin { --nav-c: #166534; }  /* админ — тёмно-зелёный */
+
+/* ===== Мобильный navbar: кнопки во всю ширину, форма выхода — к правому краю ===== */
+@media (max-width: 767.98px) {
+    /* Раскрытый navbar — flex column, чтобы align-self работал у формы */
+    .navbar-collapse.show {
+        display: flex !important;
+        flex-direction: column;
+    }
+    .nav-btns { width: 100%; }
+    .nav-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        transform: none !important;     /* не дёргаем кнопку вверх в стеке */
+    }
+    /* подсветка-полоса под кнопкой в столбце мешает — скрываем */
+    .nav-btn.active::after { display: none; }
+    /* «user [Выйти]» — отдельной строкой справа */
+    .navbar-collapse > form {
+        align-self: flex-end;
+        margin-top: .5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .display-4 { font-size: 2.5rem; }
+    .navbar-brand { font-size: 1rem; }
+    .btn { padding: 0.5rem 1rem; font-size: 1.1rem; }   /* крупные кнопки под пальцы */
+    input, textarea, select { font-size: 16px; }         /* iOS не зумит при >= 16px */
+}

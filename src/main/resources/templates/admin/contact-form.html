@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Контакт')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3">Контакт</h1>
+
+    <form th:action="@{${action}}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Тип</label>
+            <input type="text" th:field="*{type}" class="form-control" maxlength="100"/>
+            <div class="text-danger small" th:errors="*{type}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Контакт</label>
+            <textarea th:field="*{contactInfo}" class="form-control" rows="3"></textarea>
+            <div class="text-danger small" th:errors="*{contactInfo}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Примечание</label>
+            <input type="text" th:field="*{comment}" class="form-control" maxlength="500"/>
+            <div class="text-danger small" th:errors="*{comment}"></div>
+        </div>
+        <button class="btn btn-success">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/admin/contacts}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

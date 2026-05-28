@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('История')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h1 class="mb-3">История по событиям</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr><th>Событие</th><th class="text-end">Собрано</th><th class="text-end">Потрачено</th><th class="text-end">Остаток</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${periods}">
+                <td th:text="${p.eventName}"></td>
+                <td class="text-end" th:text="${#numbers.formatInteger(p.collected, 1, 'NONE')} + ' ₽'"></td>
+                <td class="text-end" th:text="${#numbers.formatInteger(p.spent, 1, 'NONE')} + ' ₽'"></td>
+                <td class="text-end fw-bold"
+                    th:with="diff=${p.collected.subtract(p.spent)}"
+                    th:classappend="${diff.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'balance-positive' : 'balance-negative'}"
+                    th:text="${#numbers.formatInteger(diff, 1, 'NONE')} + ' ₽'"></td>
+            </tr>
+            <tr th:if="${periods.isEmpty()}"><td colspan="4" class="text-muted text-center">Пока нет событий</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

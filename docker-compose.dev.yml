@@ -1,0 +1,32 @@
+# FALLBACK для разработки БЕЗ devcontainer.
+# Рекомендуемый путь — devcontainer (см. .devcontainer/README.md).
+# Этот compose поднимает только postgres на хосте:5432; само приложение
+# запускается через `./gradlew bootRun` на хосте.
+#
+# Используй когда:
+#   - devcontainer не работает (Docker Desktop недоступен, корпсеть и т.д.)
+#   - нужна нативная отладка через IntelliJ IDEA на Windows без VS Code
+#
+# Внутри devcontainer этот файл НЕ нужен — postgres уже поднят
+# .devcontainer/docker-compose.yml.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: village-postgres-dev
+    environment:
+      POSTGRES_DB: village
+      POSTGRES_USER: village
+      POSTGRES_PASSWORD: village
+    ports:
+      - "5432:5432"
+    volumes:
+      - village_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U village -d village"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  village_pg_data:

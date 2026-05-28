@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="003-balance-view" author="village">
+        <createView viewName="balance_view" schemaName="village">
+            SELECT
+                COALESCE((SELECT SUM(amount) FROM village.payment), 0)
+                - COALESCE((SELECT SUM(amount) FROM village.expense), 0)
+                AS amount
+        </createView>
+    </changeSet>
+
+</databaseChangeLog>

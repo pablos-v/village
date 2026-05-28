@@ -144,9 +144,9 @@
 - При запросе вне темы: "Извините, я могу отвечать только на вопросы по статистике денежных сборов"
 
 **Технологии:**
-- Spring AI
-- OpenRouter (бесплатная модель)
-- RAG (Retrieval-Augmented Generation) — запросы к БД
+- Spring AI 1.1.x GA (`spring-ai-starter-model-openai` + `spring-ai-bom`)
+- OpenRouter (бесплатная модель, base-url переопределяется)
+- Text-to-SQL, ограниченный схемой `village`
 
 ---
 
@@ -467,7 +467,7 @@
 ```
 
 ### GET `/api/balance`
-Текущий остаток (из balance_mv)
+Текущий остаток (из VIEW `balance_view`)
 
 ### GET `/api/history/periods`
 История по периодам (событиям)
@@ -511,12 +511,64 @@
         ↓
 AI генерирует: "SELECT SUM(amount) FROM payment WHERE ..."
         ↓
-Валидация SQL (только SELECT)
+Валидация SQL (только SELECT, только схема village)
         ↓
-   Выполнение запроса
+   Выполнение запроса под ролью village_ai (GRANT SELECT только на village)
         ↓
 AI форматирует ответ: "В марте собрано 45 000 ₽"
 ```
+
+---
+
+### Зачем именно такая защита (defense in depth)
+
+Главная проблема text-to-SQL: SQL сочиняет внешняя LLM, мы её не контролируем. Если ничего не делать — она может сгенерировать `DELETE FROM payment`, `DROP TABLE`, `SELECT pg_sleep(60)`, прочитать `pg_user`, `information_schema.tables` (всю структуру всех таблиц БД) — и всё это валидные с точки зрения PostgreSQL запросы.
+
+**Наивный подход «strstr на DROP»** (искать запрещённые слова в строке SQL) — обходится тривиально:
+- `SELECT * FROM pg_stat_activity` — нет ни одного запрещённого слова, но даёт читать активные сессии БД.
+- `SELECT pg_sleep(60)` — нет ничего запрещённого, кладёт пул соединений.
+- `SELECT * FROM information_schema.columns` — читает всю схему БД.
+
+Поэтому защиту делаем **слоями** — если один пробит, остальные держат:
+
+| # | Слой | Где живёт | Что страхует |
+|---|------|-----------|--------------|
+| 1 | **Отдельная схема `village`** | PostgreSQL | Все таблицы проекта изолированы от `public` и системных схем |
+| 2 | **Роль `village_ai` с GRANT SELECT только на схему `village`** | PostgreSQL | Даже если LLM сгенерирует DELETE/DROP/чтение чужих таблиц — БД отвергнет с `permission denied`. **Это главный слой** — на уровне БД, его нельзя обойти багом в нашем коде |
+| 3 | **`search_path = village`** для этой роли | PostgreSQL | LLM не может неявно сослаться на `pg_catalog.*` или `public.*` без явного префикса — упрощает блок-листы |
+| 4 | **`statement_timeout = 3s`, `lock_timeout = 1s`** | PostgreSQL | `pg_sleep`, тяжёлые JOIN'ы, `FOR UPDATE` — БД сама прерывает через таймаут |
+| 5 | **System prompt** | Spring AI | LLM получает инструкцию «только SELECT, только таблицы village, без pg_*». Мягкая защита — слушается ≈95% случаев |
+| 6 | **Java-валидация SQL** | приложение | Первый токен = SELECT; запрет на `;`, `--`, `/* */`, `pg_`, `information_schema`, `FOR UPDATE`, DDL/DML — чтобы не дёргать БД зря |
+| 7 | **Логирование SQL** | приложение | Видим все запросы, ловим аномалии и попытки взлома |
+
+**Главное правило:** защита на уровне БД (слои 1-4) сильнее любой защиты на уровне приложения (слои 5-7) — её нельзя обойти даже багом в нашем Java-коде, нельзя забыть подключить, нельзя «случайно отключить» при рефакторинге. Java-слой — только страховка, чтобы быстро отказать в очевидных случаях и не нагружать БД.
+
+---
+
+### БД-роль для AI (главный слой защиты)
+
+```sql
+-- Отдельная роль с минимальными правами
+CREATE ROLE village_ai LOGIN PASSWORD '...';
+
+-- Доступ ТОЛЬКО к схеме village
+GRANT USAGE ON SCHEMA village TO village_ai;
+GRANT SELECT ON ALL TABLES IN SCHEMA village TO village_ai;
+ALTER DEFAULT PRIVILEGES IN SCHEMA village GRANT SELECT ON TABLES TO village_ai;
+
+-- Запрет на public и системные схемы (на всякий случай)
+REVOKE ALL ON SCHEMA public FROM village_ai;
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM village_ai;
+
+-- search_path фиксирован на village — никаких неявных pg_catalog/public
+ALTER ROLE village_ai SET search_path = village;
+
+-- Защита от тяжёлых запросов
+ALTER ROLE village_ai SET statement_timeout = '3s';
+ALTER ROLE village_ai SET lock_timeout = '1s';
+```
+
+Этот слой делает большую часть работы за нас: даже если AI попытается прочитать `pg_stat_activity`, `pg_catalog.pg_user`, выполнить `SELECT * FROM other_schema.secrets`, PostgreSQL вернёт `permission denied` без нашего участия.
 
 ---
 
@@ -524,71 +576,69 @@ AI форматирует ответ: "В марте собрано 45 000 ₽"
 
 ```java
 @Service
+@RequiredArgsConstructor
 public class AiChatService {
 
     private final ChatClient chatClient;
-    private final JdbcTemplate jdbcTemplate;
+    // ВАЖНО: отдельный DataSource под ролью village_ai
+    @Qualifier("aiJdbcTemplate")
+    private final JdbcTemplate aiJdbcTemplate;
 
-    // System prompt для ограничения тематики
     private static final String SYSTEM_PROMPT = """
         Ты — ассистент по статистике денежных сборов на улице.
 
-        Твоя задача — отвечать на вопросы по статистике, генерируя SQL запросы.
-
         ПРАВИЛА:
-        1. Генерируй ТОЛЬКО SELECT запросы
-        2. Используй таблицы: street, bldng, address, household, inhabitant, events, payment, expense
-        3. Форматируй ответы дружелюбно на русском
-        4. При вопросах вне темы отвечай: "Извините, я могу отвечать только на вопросы по статистике денежных сборов"
+        1. Генерируй ТОЛЬКО SELECT запросы.
+        2. Используй ТОЛЬКО таблицы схемы village: street, bldng, address, household,
+           inhabitant, events, payment, expense, balance_view.
+        3. НЕ используй системные таблицы (pg_catalog.*, information_schema.*).
+        4. НЕ используй FOR UPDATE, FOR SHARE, LOCK, SELECT INTO.
+        5. Форматируй ответы дружелюбно на русском.
+        6. При вопросах вне темы отвечай:
+           "Извините, я могу отвечать только на вопросы по статистике денежных сборов".
 
-        СТРУКТУРА БД:
-        - street (id, name) — улицы
-        - bldng (id, number, dscrptn) — номера домов
-        - address (id, street_id FK, bldng_id FK) — адреса (связь улицы и дома)
-        - household (id, master_inh_id FK, addrss_id FK) — домохозяйства
-        - inhabitant (id, name, phone, hh_id FK) — жители
-        - events (id, name, cost) — платёжные периоды/события (напр. "2026 март", 500)
-        - payment (id, hh_id FK, paydate, evnt_id FK, amount) — поступления денег
-        - expense (id, event_id FK, amount, date, comment) — расходы
-        - balance_mv — Materialized View (total_income - total_expense)
+        СТРУКТУРА БД (схема village):
+        - street (id, name)
+        - bldng (id, number, dscrptn)
+        - address (id, street_id FK, bldng_id FK)
+        - household (id, addrss_id FK)
+        - inhabitant (id, name, phone, hh_id FK, is_master) — мастер дома: is_master = true
+        - events (id, name, cost)
+        - payment (id, hh_id FK, paydate, evnt_id FK, amount)
+        - expense (id, event_id FK, amount, date, comment)
+        - balance_view — текущий остаток (SUM payments − SUM expenses)
 
-        АДРЕС собирается так: street.name || ', д. ' || bldng.number
-        ПРИМЕР JOIN адреса: household h JOIN address a ON h.addrss_id = a.id JOIN street s ON a.street_id = s.id JOIN bldng b ON a.bldng_id = b.id
+        АДРЕС: street.name || ', д. ' || bldng.number
+        JOIN адреса: household h JOIN address a ON h.addrss_id = a.id
+                     JOIN street s ON a.street_id = s.id
+                     JOIN bldng b ON a.bldng_id = b.id
         """;
 
+    private static final Pattern FORBIDDEN = Pattern.compile(
+        "\\b(drop|delete|insert|update|alter|create|truncate|grant|revoke|execute|" +
+        "merge|copy|vacuum|analyze|cluster|reindex|lock|notify|listen|" +
+        "for\\s+update|for\\s+share|into\\s+outfile|pg_|information_schema)\\b" +
+        "|;|--|/\\*|\\*/",
+        Pattern.CASE_INSENSITIVE
+    );
+
     @Bean
-    @Description("Выполнить SELECT запрос к базе данных")
+    @Description("Выполнить SELECT-запрос по схеме village")
     public Function<SqlRequest, List<Map<String, Object>>> executeSql() {
         return request -> {
-            String sql = request.sql().toUpperCase().trim();
+            String sql = request.sql().trim();
 
-            // 1. Только SELECT
-            if (!sql.startsWith("SELECT")) {
-                throw new SecurityException("Разрешены только SELECT запросы!");
+            if (!sql.regionMatches(true, 0, "SELECT", 0, 6)) {
+                throw new SecurityException("Разрешены только SELECT запросы");
+            }
+            if (FORBIDDEN.matcher(sql).find()) {
+                log.warn("Заблокирован SQL: {}", sql);
+                throw new SecurityException("Запрещённая конструкция в SQL");
             }
 
-            // 2. Защита от запрещённых операций
-            List<String> forbidden = List.of(
-                "DROP", "DELETE", "INSERT", "UPDATE", "ALTER",
-                "CREATE", "TRUNCATE", "GRANT", "REVOKE", "EXECUTE"
-            );
-
-            for (String word : forbidden) {
-                if (sql.contains(word)) {
-                    log.warn("Попытка запрещённой операции: {}", word);
-                    throw new SecurityException("Обнаружена попытка запрещённой операции");
-                }
-            }
-
-            // 3. Защита от SQL инъекций (базовая)
-            if (sql.contains(";") || sql.contains("--")) {
-                throw new SecurityException("Обнаружена подозрительная конструкция");
-            }
-
-            // 4. Логирование для мониторинга
             log.info("AI SQL: {}", sql);
-
-            return jdbcTemplate.queryForList(request.sql());
+            // Выполняется под ролью village_ai с GRANT только на village + statement_timeout
+            return aiJdbcTemplate.queryForList(sql);
         };
     }
 
@@ -602,7 +652,7 @@ public class AiChatService {
     }
 
     public record SqlRequest(
-        @Description("SQL SELECT запрос")
+        @Description("SQL SELECT запрос по схеме village")
         String sql
     ) {}
 }
@@ -615,14 +665,14 @@ public class AiChatService {
 ```java
 @RestController
 @RequestMapping("/api/ai")
+@RequiredArgsConstructor
 public class AiController {
 
     private final AiChatService aiChatService;
 
     @PostMapping("/chat")
     public ResponseEntity<String> chat(@RequestBody String message) {
-        String response = aiChatService.chat(message);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(aiChatService.chat(message));
     }
 }
 ```
@@ -633,6 +683,12 @@ public class AiController {
 
 ```yaml
 spring:
+  datasource:
+    # Основной datasource — под ролью village (RW)
+    url: jdbc:postgresql://localhost:5432/village?currentSchema=village
+    username: village
+    password: ${DB_PASSWORD}
+
   ai:
     openai:
       api-key: ${OPENROUTER_API_KEY}
@@ -640,16 +696,18 @@ spring:
       chat:
         options:
           model: google/gemma-3-27b-it:free
+
+# Отдельный datasource под AI-ролью (RO, только схема village)
+# statement_timeout и search_path заданы в БД через ALTER ROLE village_ai SET ... — см. SQL выше
+app:
+  ai-datasource:
+    url: jdbc:postgresql://localhost:5432/village?currentSchema=village
+    username: village_ai
+    password: ${DB_AI_PASSWORD}
 ```
 
 ---
 
 ### Уровни защиты
 
-| Уровень | Что проверяется | Результат |
-|---------|-----------------|-----------|
-| **System prompt** | Тематика вопроса | Мягкая защита |
-| **SQL validation** | Только SELECT | Жёсткая защита |
-| **Forbidden words** | DROP, DELETE и т.д. | Жёсткая защита |
-| **Injection check** | ; -- и т.д. | Жёсткая защита |
-| **Logging** | Все запросы | Мониторинг |
+См. раздел [«Зачем именно такая защита (defense in depth)»](#зачем-именно-такая-защита-defense-in-depth) выше — там сводная таблица всех 7 слоёв с пояснениями.

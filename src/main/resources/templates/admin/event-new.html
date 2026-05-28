@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Новое событие')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3">Новое событие</h1>
+
+    <form th:action="@{/admin/events}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Название</label>
+            <input type="text" th:field="*{name}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{name}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Сумма</label>
+            <input type="number" step="1" min="0" th:field="*{cost}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{cost}"></div>
+        </div>
+        <button class="btn btn-success">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/admin/events}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

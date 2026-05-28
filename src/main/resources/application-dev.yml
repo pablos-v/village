@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/village
+    username: village
+    password: village
+  jpa:
+    show-sql: true
+logging:
+  level:
+    ru.village: DEBUG
+    org.hibernate.SQL: DEBUG
+
+app:
+  security:
+    admin-password: admin
+    operator-password: operator
+    user-password: user
+  ai-datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/village?currentSchema=village
+    username: village_ai
+    password: village_ai_dev

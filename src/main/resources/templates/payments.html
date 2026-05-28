@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Поступления')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h1 class="mb-3">Все поступления</h1>
+
+    <form method="get" th:action="@{/payments}" class="row g-2 align-items-end mb-3">
+        <div class="col-auto">
+            <label class="form-label">Год</label>
+            <select name="year" class="form-select">
+                <option th:each="y : ${years}" th:value="${y}" th:text="${y}"
+                        th:selected="${y == year}"></option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Месяц</label>
+            <select name="month" class="form-select">
+                <option th:each="m : ${months}" th:value="${m.key}" th:text="${m.value}"
+                        th:selected="${m.key == month}"></option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-success">Фильтр</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr><th>Дата</th><th>Адрес</th><th>Событие</th><th class="text-end">Сумма</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${payments.content}">
+                <td th:text="${#temporals.format(p.date, 'dd.MM.yyyy')}"></td>
+                <td th:text="${p.address}"></td>
+                <td th:text="${p.eventName}"></td>
+                <td class="text-end text-success fw-bold" th:text="${#numbers.formatInteger(p.amount, 1, 'NONE')} + ' ₽'"></td>
+            </tr>
+            <tr th:if="${payments.isEmpty()}"><td colspan="4" class="text-muted text-center">Ничего не найдено</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="text-muted">
+        Страница <span th:text="${payments.number + 1}"></span> из <span th:text="${payments.totalPages}"></span>
+    </p>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

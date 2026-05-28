@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Village — главная')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="card mb-3">
+        <div class="card-body text-center">
+            <h2 class="card-title">💰 Текущий остаток</h2>
+            <p class="display-4"
+               th:classappend="${balance.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'balance-positive' : 'balance-negative'}"
+               th:text="${#numbers.formatInteger(balance, 1, 'NONE')} + ' ₽'">0 ₽</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <h3>📋 Последние поступления</h3>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between" th:each="p : ${recentPayments}">
+                    <span><span th:text="${#temporals.format(p.date, 'dd.MM.yyyy')}"></span> — <span th:text="${p.address}"></span></span>
+                    <span class="text-success fw-bold" th:text="${#numbers.formatInteger(p.amount, 1, 'NONE')} + ' ₽'"></span>
+                </li>
+                <li class="list-group-item text-muted" th:if="${recentPayments.isEmpty()}">Пока нет поступлений</li>
+            </ul>
+            <a class="btn btn-link px-0" th:href="@{/payments}">Все поступления →</a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <h3>📜 Последние расходы</h3>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between" th:each="e : ${recentExpenses}">
+                    <span><span th:text="${#temporals.format(e.date, 'dd.MM.yyyy')}"></span> — <span th:text="${e.comment}"></span></span>
+                    <span class="text-danger fw-bold" th:text="${#numbers.formatInteger(e.amount, 1, 'NONE')} + ' ₽'"></span>
+                </li>
+                <li class="list-group-item text-muted" th:if="${recentExpenses.isEmpty()}">Пока нет расходов</li>
+            </ul>
+            <a class="btn btn-link px-0" th:href="@{/expenses}">Все расходы →</a>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-6 mb-3" th:if="${!contacts.isEmpty()}">
+            <h3>📞 Полезная информация</h3>
+            <ul class="list-group">
+                <li class="list-group-item" th:each="c : ${contacts}">
+                    <strong th:text="${c.type}"></strong>: <span th:text="${c.contactInfo}"></span>
+                    <small th:if="${c.comment}" class="text-muted d-block" th:text="${c.comment}"></small>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6 mb-3">
+            <h3>🤖 ИИ-ассистент</h3>
+            <textarea class="form-control mb-2" id="ai-input" rows="2"
+                      placeholder="Например: Кто сдал больше всех? Сколько собрали в этом месяце?"></textarea>
+            <button class="btn btn-success" id="ai-send">Спросить</button>
+            <div id="ai-history" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/ai-chat.js}" defer></script>
+</body>
+</html>

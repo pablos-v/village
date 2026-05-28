@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Новый расход')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3">Внести расход</h1>
+
+    <form th:action="@{/admin/expense}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Событие</label>
+            <select th:field="*{eventId}" class="form-select">
+                <option th:each="e : ${events}" th:value="${e.id}" th:text="${e.name}"></option>
+            </select>
+            <div class="text-danger small" th:errors="*{eventId}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Сумма</label>
+            <input type="number" step="1" min="0" th:field="*{amount}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{amount}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Дата</label>
+            <input type="date" th:field="*{date}" class="form-control"/>
+            <div class="text-danger small" th:errors="*{date}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Комментарий</label>
+            <input type="text" th:field="*{comment}" class="form-control" maxlength="500"/>
+            <div class="text-danger small" th:errors="*{comment}"></div>
+        </div>
+
+        <button class="btn btn-success">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/date-picker.js}" defer></script>
+</body>
+</html>

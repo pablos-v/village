@@ -1,0 +1,46 @@
+name: village-devcontainer
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: village-devcontainer-postgres
+    environment:
+      POSTGRES_DB: village
+      POSTGRES_USER: village
+      POSTGRES_PASSWORD: village
+    ports:
+      # Наружу — 5433, чтобы не конфликтовать с docker-compose.dev.yml (5432)
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U village -d village"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  dev:
+    container_name: village-devcontainer-dev
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspaces/village:cached
+      - gradle-cache:/home/vscode/.gradle
+      # Docker-outside-of-docker для Testcontainers (host docker.sock проксируется в контейнер)
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: sleep infinity
+    environment:
+      # DB_HOST=postgres внутри devcontainer (override host-default localhost)
+      DB_HOST: postgres
+      SPRING_DATASOURCE_USERNAME: village
+      SPRING_DATASOURCE_PASSWORD: village
+      # Testcontainers: Ryuk слушает на host'е, devcontainer не на bridge-сети — ходим через host.docker.internal
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  gradle-cache:

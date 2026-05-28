@@ -1,0 +1,61 @@
+package ru.village.handler;
+
+import java.time.OffsetDateTime;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.village.controller.AdminApiController;
+import ru.village.controller.AdminContactsApiController;
+import ru.village.controller.AiController;
+import ru.village.controller.PublicApiController;
+import ru.village.exception.EntityNotFoundException;
+import ru.village.exception.InsufficientBalanceException;
+
+/** Превращает исключения из REST-контроллеров в структурированный JSON-ответ. */
+@RestControllerAdvice(assignableTypes = {
+        PublicApiController.class, AdminApiController.class,
+        AdminContactsApiController.class, AiController.class
+})
+@Slf4j
+public class GlobalExceptionHandler {
+
+    public record ErrorResponse(OffsetDateTime timestamp, String error, String message) {}
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> badRequest(IllegalArgumentException e) {
+        log.warn("Bad request: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(OffsetDateTime.now(), "bad_request", e.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> validation(MethodArgumentNotValidException e) {
+        log.warn("Validation failed: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(OffsetDateTime.now(), "validation", e.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> notFound(EntityNotFoundException e) {
+        log.warn("Not found: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(OffsetDateTime.now(), "not_found", e.getMessage()));
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<ErrorResponse> insufficient(InsufficientBalanceException e) {
+        log.warn("Insufficient balance: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(OffsetDateTime.now(), "insufficient_balance", e.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> internal(Exception e) {
+        log.error("Unhandled", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(OffsetDateTime.now(), "internal", "Внутренняя ошибка"));
+    }
+}
