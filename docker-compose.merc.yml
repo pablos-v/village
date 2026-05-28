@@ -1,0 +1,63 @@
+# Деплой Village на сервер с FastPanel (или любой другой сервер,
+# где 80/443 уже заняты сторонним nginx, а HTTPS терминируется снаружи).
+#
+# Отличия от канонического docker-compose.prod.yml:
+#   - НЕТ nginx-proxy / letsencrypt-companion — TLS делает внешний nginx
+#   - village-app слушает ТОЛЬКО на 127.0.0.1:8080 (наружу не торчит)
+#   - JVM ограничен по памяти (256–384 MB heap) — сервер слабый, рядом
+#     работают чужие сайты и MySQL
+#   - размер логов докер-контейнеров ограничен — чтобы не съели диск
+#
+# Использование:
+#   docker compose -f docker-compose.merc.yml pull
+#   docker compose -f docker-compose.merc.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: village-postgres
+    environment:
+      POSTGRES_DB: village
+      POSTGRES_USER: village
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - village_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U village -d village"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  village-app:
+    image: ${IMAGE:-ghcr.io/pablos-v/village:latest}
+    container_name: village-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/village
+      - SPRING_DATASOURCE_USERNAME=village
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      # Лимиты JVM под сервер с 3.8 GB RAM, делящимся с FastPanel/MySQL
+      - JAVA_TOOL_OPTIONS=-Xms256m -Xmx384m -XX:MaxRAMPercentage=70
+    ports:
+      # ВАЖНО: только локально — наружу проксирует FastPanel-овый nginx
+      - "127.0.0.1:8080:8080"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: always
+
+volumes:
+  village_pg_data:
