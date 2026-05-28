@@ -80,9 +80,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             for i in {1..30}; do
-              if curl -fsS http://localhost:8080/actuator/health; then
+              if curl -fsS http://localhost:8080/actuator/health | grep -q '"status":"UP"'; then
                 echo "Health OK"; exit 0;
               fi
               sleep 2
             done
-            echo "Health check failed"; exit 1
+            echo "Health check failed after 60s"; exit 1

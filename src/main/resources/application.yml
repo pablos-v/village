@@ -40,7 +40,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+    info:
+      enabled: true
+  info:
+    git:
+      mode: simple
 
 server:
   port: 8080

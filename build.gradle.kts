@@ -58,3 +58,9 @@ tasks.withType<Test> {
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     archiveFileName.set("app.jar")
 }
+
+// Генерирует build/resources/main/META-INF/build-info.properties.
+// Spring Boot Actuator подхватывает и публикует на /actuator/info (под ADMIN).
+springBoot {
+    buildInfo()
+}
