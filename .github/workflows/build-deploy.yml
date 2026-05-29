@@ -67,10 +67,17 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
             cd /opt/village
+            # Подтянуть код: compose-файл, скрипты, обновления .env.example и т.п.
+            git pull --ff-only
+            # Перепишем IMAGE на свежий тег (CI пушит :latest и :<sha>)
             echo "IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" > .env.image
-            docker compose --env-file .env --env-file .env.image -f docker-compose.prod.yml pull village-app
-            docker compose --env-file .env --env-file .env.image -f docker-compose.prod.yml up -d
+            # Pull всех сервисов — postgres тоже хочется иметь свежий patch (16-alpine)
+            docker compose --env-file .env --env-file .env.image -f docker-compose.merc.yml pull
+            # up -d пересоздаёт контейнеры, чьи compose-настройки изменились,
+            # и подтягивает свежий образ village-app
+            docker compose --env-file .env --env-file .env.image -f docker-compose.merc.yml up -d
 
       - name: Smoke test
         uses: appleboy/ssh-action@v1.0.0
