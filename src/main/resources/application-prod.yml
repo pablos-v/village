@@ -5,6 +5,12 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     show-sql: false
+
+server:
+  # За FastPanel-nginx (или любым reverse proxy). Заставляет Spring доверять
+  # X-Forwarded-Proto/Host/For — иначе HTTP→HTTPS redirect Spring Security
+  # отдаёт на http://, а не https://, и браузер делает лишний прыжок.
+  forward-headers-strategy: NATIVE
 logging:
   level:
     ru.village: INFO
