@@ -1,27 +1,128 @@
+/* ============================================================
+   Village — тёплая «сельская/уличная» тема поверх Bootstrap 5.3
+   Палитра: кремовая бумага, лесной зелёный, землистая терракота.
+   Шрифты: Spectral (заголовки/суммы), Onest (текст/интерфейс).
+   ============================================================ */
+
 :root {
-    --balance-positive: #198754;
-    --balance-negative: #dc3545;
+    /* — Зелёная гамма (база уже была задана ролями навигации) — */
+    --vlg-green:        #2f6b3f;   /* основной лесной зелёный */
+    --vlg-green-deep:   #1f4d2c;   /* тёмный (админ/заголовки) */
+    --vlg-teal:         #0f766e;   /* оператор */
+    --vlg-green-soft:   #e7efe3;   /* светлая заливка */
+
+    /* — Землистые акценты — */
+    --vlg-clay:         #c4703f;   /* терракота — расходы, тёплый акцент */
+    --vlg-clay-deep:    #a85628;
+    --vlg-wheat:        #e8d9b5;   /* пшеница — бордюры/разделители */
+    --vlg-sun:          #e3a008;   /* солнечный, для бейджей */
+
+    /* — Бумага и текст — */
+    --vlg-paper:        #f7f3ea;   /* фон страницы */
+    --vlg-paper-2:      #fffdf8;   /* фон карточек */
+    --vlg-ink:          #2e2a23;   /* основной текст */
+    --vlg-ink-soft:     #6f685b;   /* приглушённый текст */
+    --vlg-line:         #e6dec9;   /* тонкие линии */
+
+    /* — Тени/радиусы — */
+    --vlg-shadow:       0 6px 24px -10px rgba(47, 60, 40, .35);
+    --vlg-shadow-sm:    0 2px 10px -6px rgba(47, 60, 40, .30);
+    --vlg-radius:       1rem;
+
+    /* совместимость со старой разметкой */
+    --balance-positive: var(--vlg-green);
+    --balance-negative: var(--vlg-clay-deep);
+
+    /* перекрываем bootstrap-переменные точечно */
+    --bs-body-color: var(--vlg-ink);
+    --bs-body-bg: var(--vlg-paper);
+    --bs-link-color: var(--vlg-green);
+    --bs-link-hover-color: var(--vlg-green-deep);
 }
 
-.balance-positive { color: var(--balance-positive); }
-.balance-negative { color: var(--balance-negative); }
+/* ===== Базовая типографика и фон ===== */
+body {
+    font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--vlg-ink);
+    background-color: var(--vlg-paper);
+    /* мягкая «полевая» подложка: два размытых пятна + бумага */
+    background-image:
+        radial-gradient(1200px 480px at 100% -8%, rgba(47, 107, 63, .10), transparent 60%),
+        radial-gradient(900px 420px at -10% 4%, rgba(196, 112, 63, .08), transparent 55%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
 
-/* ===== Кнопки навигации ===== */
-/* Единая зелёная гамма. Неактивные — контурные (рамка + цветной текст),
-   активная — залита. Роли различаются оттенком зелёного. */
+h1, h2, h3, h4, .card-title, .display-4 {
+    font-family: 'Spectral', Georgia, 'Times New Roman', serif;
+    color: var(--vlg-green-deep);
+    letter-spacing: -.01em;
+}
+
+h1 { font-weight: 700; }
+
+/* Заголовки-секции на страницах со списками — с «листочком»-маркером */
+.container > h1 { margin-bottom: 1.25rem; }
+.container > h1::before {
+    content: '';
+    display: inline-block;
+    width: .5rem; height: 1.4rem;
+    margin-right: .6rem;
+    vertical-align: -.18rem;
+    border-radius: 3px;
+    background: linear-gradient(var(--vlg-green), var(--vlg-teal));
+}
+
+a { text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+.balance-positive { color: var(--vlg-green); }
+.balance-negative { color: var(--vlg-clay-deep); }
+.text-success { color: var(--vlg-green) !important; }
+.text-danger  { color: var(--vlg-clay-deep) !important; }
+
+/* ===== Навбар — «деревянная вывеска» ===== */
+.village-navbar {
+    background: linear-gradient(180deg, var(--vlg-paper-2), #f3ecdd);
+    border-bottom: 1px solid var(--vlg-line);
+    box-shadow: var(--vlg-shadow-sm);
+}
+.village-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: 'Spectral', serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--vlg-green-deep) !important;
+}
+.village-brand__mark {
+    display: inline-grid;
+    place-items: center;
+    width: 2.1rem; height: 2.1rem;
+    border-radius: .6rem;
+    background: var(--vlg-green-soft);
+    box-shadow: inset 0 0 0 1px var(--vlg-wheat);
+    font-size: 1.15rem;
+}
+.village-navbar .navbar-text {
+    color: var(--vlg-ink-soft);
+    font-weight: 500;
+}
+
+/* ===== Кнопки навигации (унаследовано, перекрашено в тему) ===== */
 .nav-btns { gap: .4rem; }
 
 .nav-btn {
     position: relative;
     display: inline-block;
     padding: .45rem 1.05rem;
-    border-radius: .45rem;
+    border-radius: .6rem;
     font-weight: 600;
     text-decoration: none;
     border: 1.5px solid var(--nav-c);
     color: var(--nav-c);
     background: transparent;
-    transition: background-color .15s ease, color .15s ease, transform .12s ease;
+    transition: background-color .15s ease, color .15s ease, transform .12s ease, box-shadow .15s ease;
 }
 .nav-btn:hover {
     background: color-mix(in srgb, var(--nav-c) 12%, transparent);
@@ -31,9 +132,8 @@
     background: var(--nav-c);
     color: #fff;
     transform: translateY(-2px);
+    box-shadow: var(--vlg-shadow-sm);
 }
-
-/* подсветка-полоса, «стекающая» вниз от активной кнопки */
 .nav-btn.active::after {
     content: '';
     position: absolute;
@@ -45,14 +145,192 @@
     background: var(--nav-c);
 }
 
-/* оттенки зелёного по ролям */
-.nav-btn--user  { --nav-c: #198754; }  /* обычный — success green */
-.nav-btn--op    { --nav-c: #0f766e; }  /* оператор — teal */
-.nav-btn--admin { --nav-c: #166534; }  /* админ — тёмно-зелёный */
+.nav-btn--user  { --nav-c: var(--vlg-green); }
+.nav-btn--op    { --nav-c: var(--vlg-teal); }
+.nav-btn--admin { --nav-c: var(--vlg-green-deep); }
 
-/* ===== Мобильный navbar: кнопки во всю ширину, форма выхода — к правому краю ===== */
+/* ===== Карточки ===== */
+.card {
+    border: 1px solid var(--vlg-line);
+    border-radius: var(--vlg-radius);
+    background: var(--vlg-paper-2);
+    box-shadow: var(--vlg-shadow);
+}
+.card-body { padding: 1.4rem 1.5rem; }
+
+/* ===== Hero-остаток (главная) ===== */
+.balance-hero {
+    position: relative;
+    overflow: hidden;
+    border: none;
+    border-radius: 1.4rem;
+    color: #fff;
+    background:
+        radial-gradient(700px 300px at 110% -20%, rgba(255, 255, 255, .18), transparent 60%),
+        linear-gradient(135deg, var(--vlg-green) 0%, var(--vlg-green-deep) 70%, #16361f 100%);
+    box-shadow: 0 18px 50px -20px rgba(31, 77, 44, .8);
+}
+.balance-hero::after {
+    /* лёгкий «холмистый» декор снизу */
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px; height: 46px;
+    background:
+        radial-gradient(60% 100% at 20% 100%, rgba(255,255,255,.10), transparent 70%),
+        radial-gradient(60% 100% at 75% 100%, rgba(255,255,255,.08), transparent 70%);
+    pointer-events: none;
+}
+.balance-hero .card-title {
+    color: rgba(255, 255, 255, .9);
+    font-weight: 500;
+    letter-spacing: .02em;
+}
+.balance-hero .display-4 {
+    font-family: 'Spectral', serif;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+}
+/* на тёмном hero знак баланса не должен быть «земляным» */
+.balance-hero .display-4.balance-positive,
+.balance-hero .display-4.balance-negative { color: #fff; }
+.balance-hero .balance-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem .75rem;
+    margin-top: 1rem;
+}
+.balance-meta__chip {
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 999px;
+    padding: .3rem .9rem;
+    font-size: .95rem;
+    backdrop-filter: blur(2px);
+}
+
+/* ===== Заголовки секций на главной (📋 / 📜 / 📞 / 🤖) ===== */
+.section-title {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--vlg-green-deep);
+    margin-bottom: .75rem;
+    padding-bottom: .4rem;
+    border-bottom: 2px dashed var(--vlg-wheat);
+}
+
+/* ===== Списки (list-group) — «карточки-строки» ===== */
+.list-group { border-radius: var(--vlg-radius); overflow: hidden; }
+.list-group-item {
+    border-color: var(--vlg-line);
+    background: var(--vlg-paper-2);
+    padding: .75rem 1rem;
+}
+.list-group-item:hover { background: var(--vlg-green-soft); }
+
+/* ===== Таблицы ===== */
+.table {
+    --bs-table-bg: var(--vlg-paper-2);
+    --bs-table-striped-bg: #f4eede;
+    --bs-table-hover-bg: var(--vlg-green-soft);
+    border-radius: var(--vlg-radius);
+    overflow: hidden;
+    box-shadow: var(--vlg-shadow-sm);
+}
+.table thead th {
+    background: var(--vlg-green-deep);
+    color: #fff;
+    font-family: 'Onest', sans-serif;
+    font-weight: 600;
+    border-bottom: none;
+    white-space: nowrap;
+}
+.table tbody td { vertical-align: middle; color: var(--vlg-ink); }
+.table-responsive { border-radius: var(--vlg-radius); }
+
+/* ===== Кнопки действий ===== */
+.btn-success {
+    --bs-btn-bg: var(--vlg-green);
+    --bs-btn-border-color: var(--vlg-green);
+    --bs-btn-hover-bg: var(--vlg-green-deep);
+    --bs-btn-hover-border-color: var(--vlg-green-deep);
+    --bs-btn-active-bg: var(--vlg-green-deep);
+    --bs-btn-disabled-bg: var(--vlg-green);
+    border-radius: .6rem;
+    font-weight: 600;
+    box-shadow: var(--vlg-shadow-sm);
+}
+.btn-outline-success {
+    --bs-btn-color: var(--vlg-green);
+    --bs-btn-border-color: var(--vlg-green);
+    --bs-btn-hover-bg: var(--vlg-green);
+    --bs-btn-hover-border-color: var(--vlg-green);
+    --bs-btn-active-bg: var(--vlg-green-deep);
+    border-radius: .5rem;
+}
+.btn-outline-danger {
+    --bs-btn-color: var(--vlg-clay-deep);
+    --bs-btn-border-color: var(--vlg-clay);
+    --bs-btn-hover-bg: var(--vlg-clay);
+    --bs-btn-hover-border-color: var(--vlg-clay);
+    border-radius: .5rem;
+}
+.btn-link { color: var(--vlg-green); font-weight: 600; }
+.btn-link:hover { color: var(--vlg-green-deep); }
+
+/* ===== Формы ===== */
+.form-control, .form-select {
+    border-color: var(--vlg-line);
+    border-radius: .6rem;
+    background-color: var(--vlg-paper-2);
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--vlg-green);
+    box-shadow: 0 0 0 .2rem rgba(47, 107, 63, .15);
+}
+.form-label { font-weight: 600; color: var(--vlg-ink-soft); }
+
+/* ===== Алерты ===== */
+.alert-success {
+    --bs-alert-color: var(--vlg-green-deep);
+    --bs-alert-bg: var(--vlg-green-soft);
+    --bs-alert-border-color: #cfe2c6;
+    border-radius: .75rem;
+}
+.alert-danger {
+    --bs-alert-color: var(--vlg-clay-deep);
+    --bs-alert-bg: #f8e7dc;
+    --bs-alert-border-color: #eccab2;
+    border-radius: .75rem;
+}
+
+/* ===== ИИ-ассистент: история ответов ===== */
+#ai-history .ai-msg {
+    background: var(--vlg-green-soft);
+    border: 1px solid #d6e4cd;
+    border-radius: .75rem;
+    padding: .6rem .85rem;
+    margin-bottom: .6rem;
+}
+
+/* ===== Футер ===== */
+.village-footer {
+    color: var(--vlg-ink-soft);
+    border-top: 1px solid var(--vlg-line);
+    background: linear-gradient(180deg, transparent, rgba(231, 239, 227, .5));
+}
+.village-footer__leaf { margin-right: .35rem; }
+
+/* ===== Карточка входа — узкая, по центру ===== */
+.auth-card { max-width: 420px; margin: 2.5rem auto; }
+
+/* ============================================================
+   Мобильная адаптация (сохранено из исходной темы)
+   ============================================================ */
 @media (max-width: 767.98px) {
-    /* Раскрытый navbar — flex column, чтобы align-self работал у формы */
     .navbar-collapse.show {
         display: flex !important;
         flex-direction: column;
@@ -62,11 +340,9 @@
         display: block;
         width: 100%;
         text-align: center;
-        transform: none !important;     /* не дёргаем кнопку вверх в стеке */
+        transform: none !important;
     }
-    /* подсветка-полоса под кнопкой в столбце мешает — скрываем */
     .nav-btn.active::after { display: none; }
-    /* «user [Выйти]» — отдельной строкой справа */
     .navbar-collapse > form {
         align-self: flex-end;
         margin-top: .5rem;
@@ -74,10 +350,10 @@
 }
 
 @media (max-width: 480px) {
-    h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    .display-4 { font-size: 2.5rem; }
-    .navbar-brand { font-size: 1rem; }
-    .btn { padding: 0.5rem 1rem; font-size: 1.1rem; }   /* крупные кнопки под пальцы */
-    input, textarea, select { font-size: 16px; }         /* iOS не зумит при >= 16px */
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.3rem; }
+    .display-4 { font-size: 2.6rem; }
+    .navbar-brand, .village-brand { font-size: 1.05rem; }
+    .btn { padding: 0.5rem 1rem; font-size: 1.1rem; }
+    input, textarea, select { font-size: 16px; }
 }
