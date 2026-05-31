@@ -8,7 +8,7 @@
     <div th:if="${param.error}" class="alert alert-danger">Неверный пароль</div>
     <div th:if="${param.logout}" class="alert alert-success">Вы вышли из системы</div>
 
-    <div class="card">
+    <div class="card auth-card">
         <div class="card-body">
             <form th:action="@{/login}" method="post">
                 <input type="hidden" name="username" value="user"/>

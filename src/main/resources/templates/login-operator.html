@@ -7,7 +7,7 @@
 
     <div th:if="${param.error}" class="alert alert-danger">Неверный логин или пароль</div>
 
-    <div class="card">
+    <div class="card auth-card">
         <div class="card-body">
             <form th:action="@{/login}" method="post">
                 <div class="mb-3">
