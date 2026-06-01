@@ -16,6 +16,15 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: village-postgres
+    # Аудит ручных правок через DBeaver / psql: все DDL и подключения в логе.
+    command:
+      - "postgres"
+      - "-c"
+      - "log_statement=ddl"
+      - "-c"
+      - "log_connections=on"
+      - "-c"
+      - "log_disconnections=on"
     environment:
       POSTGRES_DB: village
       POSTGRES_USER: village
