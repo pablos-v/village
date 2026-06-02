@@ -62,6 +62,11 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       # Лимиты JVM под сервер с 3.8 GB RAM, делящимся с FastPanel/MySQL
       - JAVA_TOOL_OPTIONS=-Xms256m -Xmx384m -XX:MaxRAMPercentage=70
+    volumes:
+      # Прод-only переопределения (длинные многострочные значения вроде HTML-
+      # счётчика, для которых .env не годится). Spring подхватит автоматически
+      # через активный профиль prod. См. application-prod.yml.example.
+      - ./application-prod.yml:/app/application-prod.yml:ro
     ports:
       # ВАЖНО: только локально — наружу проксирует FastPanel-овый nginx
       - "127.0.0.1:8080:8080"

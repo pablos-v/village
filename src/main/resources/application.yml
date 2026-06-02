@@ -35,7 +35,8 @@ app:
   branding:
     brand: ${APP_BRAND:Village}
     tagline: ${APP_TAGLINE:Village — учёт сборов на нашей улице}
-    counter: ${APP_COUNTER:}
+    # Длинный HTML-сниппет — переопределяется в application-prod.yml на проде.
+    counter: ''
 
 management:
   endpoints:

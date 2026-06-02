@@ -69,7 +69,7 @@
     <span class="village-footer__leaf">🌿</span>
     <small th:text="${tagline} ?: 'Village — учёт сборов на нашей улице'">Village — учёт сборов на нашей улице</small>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Счётчик посещений (Яндекс.Метрика и т.п.) из ENV APP_COUNTER -->
+    <!-- Счётчик посещений: задаётся в application-prod.yml (app.branding.counter). -->
     <div th:if="${!#strings.isEmpty(counter)}" th:utext="${counter}"></div>
 </footer>
 

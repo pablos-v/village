@@ -102,6 +102,40 @@ IMAGE=ghcr.io/pablos-v/village:latest
 — они нужны только в каноническом compose для letsencrypt-companion;
 в FastPanel-варианте SSL делает панель.
 
+## 4a. `application-prod.yml` (счётчик и другие prod-only override'ы)
+
+Длинный многострочный HTML (счётчик Я.Метрики и т.п.) в `.env` положить
+нельзя — формат не дружит с переводами строк. Для таких значений рядом
+лежит `application-prod.yml`, который монтируется в контейнер и
+переопределяет дефолты из `application.yml` (профиль `prod` активирован
+в `docker-compose.merc.yml`).
+
+```bash
+cp application-prod.yml.example application-prod.yml
+nano application-prod.yml
+```
+
+Если счётчик не нужен — оставь `counter: ''` как в шаблоне, **файл всё
+равно должен существовать** (без него docker compose упадёт на volume-mount).
+
+Заполнить (пример с Я.Метрикой):
+
+```yaml
+app:
+  branding:
+    counter: |
+      <!-- Yandex.Metrika counter -->
+      <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){ ... })(window, document, 'script', ...);
+        ym(XXXXXXXX, 'init', { ... });
+      </script>
+      <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+      <!-- /Yandex.Metrika counter -->
+```
+
+`|` в YAML — литеральный блок, переводы строк сохраняются, escape кавычек
+не требуется. Файл в `.gitignore` — твой счётчик не попадает в публичный репо.
+
 ## 5. Первый запуск
 
 ```bash
