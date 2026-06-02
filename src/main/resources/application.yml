@@ -35,6 +35,7 @@ app:
   branding:
     brand: ${APP_BRAND:Village}
     tagline: ${APP_TAGLINE:Village — учёт сборов на нашей улице}
+    counter: ${APP_COUNTER:}
 
 management:
   endpoints:

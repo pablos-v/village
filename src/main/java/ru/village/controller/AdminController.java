@@ -67,6 +67,9 @@ public class AdminController {
     public String newPaymentForm(Model model) {
         model.addAttribute("form", new CreatePaymentRequest(defaultEventId(), null, null, LocalDate.now()));
         model.addAttribute("events", eventService.findAll());
+        model.addAttribute("formAction", "/admin/payment");
+        model.addAttribute("formTitle", "Внести приход");
+        model.addAttribute("addressLabel", "");
         return "admin/payment-new";
     }
 
@@ -76,16 +79,46 @@ public class AdminController {
             BindingResult br, Model model) {
         if (br.hasErrors()) {
             model.addAttribute("events", eventService.findAll());
+            model.addAttribute("formAction", "/admin/payment");
+            model.addAttribute("formTitle", "Внести приход");
             return "admin/payment-new";
         }
         paymentService.create(form);
-        return "redirect:/";
+        return "redirect:/payments";
+    }
+
+    @GetMapping("/payment/{id}/edit")
+    public String editPaymentForm(@PathVariable Long id, Model model) {
+        var p = paymentService.getForEdit(id);
+        model.addAttribute("form", new CreatePaymentRequest(p.eventId(), p.householdId(), p.amount(), p.date()));
+        model.addAttribute("events", eventService.findAll());
+        model.addAttribute("formAction", "/admin/payment/" + id);
+        model.addAttribute("formTitle", "Изменить приход");
+        model.addAttribute("addressLabel", p.address());
+        return "admin/payment-new";
+    }
+
+    @PostMapping("/payment/{id}")
+    public String updatePayment(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("form") CreatePaymentRequest form,
+            BindingResult br, Model model) {
+        if (br.hasErrors()) {
+            model.addAttribute("events", eventService.findAll());
+            model.addAttribute("formAction", "/admin/payment/" + id);
+            model.addAttribute("formTitle", "Изменить приход");
+            return "admin/payment-new";
+        }
+        paymentService.update(id, form);
+        return "redirect:/payments";
     }
 
     @GetMapping("/expense/new")
     public String newExpenseForm(Model model) {
         model.addAttribute("form", new CreateExpenseRequest(defaultEventId(), null, LocalDate.now(), ""));
         model.addAttribute("events", eventService.findAll());
+        model.addAttribute("formAction", "/admin/expense");
+        model.addAttribute("formTitle", "Внести расход");
         return "admin/expense-new";
     }
 
@@ -95,10 +128,37 @@ public class AdminController {
             BindingResult br, Model model) {
         if (br.hasErrors()) {
             model.addAttribute("events", eventService.findAll());
+            model.addAttribute("formAction", "/admin/expense");
+            model.addAttribute("formTitle", "Внести расход");
             return "admin/expense-new";
         }
         expenseService.create(form);
-        return "redirect:/";
+        return "redirect:/expenses";
+    }
+
+    @GetMapping("/expense/{id}/edit")
+    public String editExpenseForm(@PathVariable Long id, Model model) {
+        var e = expenseService.getForEdit(id);
+        model.addAttribute("form", new CreateExpenseRequest(e.eventId(), e.amount(), e.date(), e.comment()));
+        model.addAttribute("events", eventService.findAll());
+        model.addAttribute("formAction", "/admin/expense/" + id);
+        model.addAttribute("formTitle", "Изменить расход");
+        return "admin/expense-new";
+    }
+
+    @PostMapping("/expense/{id}")
+    public String updateExpense(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("form") CreateExpenseRequest form,
+            BindingResult br, Model model) {
+        if (br.hasErrors()) {
+            model.addAttribute("events", eventService.findAll());
+            model.addAttribute("formAction", "/admin/expense/" + id);
+            model.addAttribute("formTitle", "Изменить расход");
+            return "admin/expense-new";
+        }
+        expenseService.update(id, form);
+        return "redirect:/expenses";
     }
 
     @GetMapping("/contacts")

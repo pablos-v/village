@@ -11,5 +11,6 @@
     <include file="db/changelog/changes/004-indexes.xml"/>
     <include file="db/changelog/changes/005-ai-role.xml"/>
     <include file="db/changelog/changes/006-seed-event.xml"/>
+    <include file="db/changelog/changes/007-event-cost-nullable.xml"/>
 
 </databaseChangeLog>

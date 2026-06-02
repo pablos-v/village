@@ -34,4 +34,32 @@ class PaymentsPageTest extends IntegrationTestBase {
                 .andExpect(view().name("payments"))
                 .andExpect(model().attributeExists("payments"));
     }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void filterOffByDefault() throws Exception {
+        // без параметров фильтр выключен: year/month == null (показываем все)
+        mockMvc.perform(get("/payments"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("year", org.hamcrest.Matchers.nullValue()))
+                .andExpect(model().attribute("month", org.hamcrest.Matchers.nullValue()));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void pageSizeIsTwenty() throws Exception {
+        var result = mockMvc.perform(get("/payments")).andReturn();
+        var page = (org.springframework.data.domain.Page<?>) result.getModelAndView().getModel().get("payments");
+        org.assertj.core.api.Assertions.assertThat(page.getSize()).isEqualTo(20);
+    }
+
+    @Test
+    @WithMockUser(roles = "OPERATOR")
+    void operatorSeesEditHint() throws Exception {
+        // рендер страницы с #authorization.expression не падает, есть подсказка про клик
+        mockMvc.perform(get("/payments"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                        .content().string(org.hamcrest.Matchers.containsString("Нажмите на запись")));
+    }
 }

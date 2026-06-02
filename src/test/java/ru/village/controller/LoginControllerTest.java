@@ -34,16 +34,7 @@ class LoginControllerTest extends IntegrationTestBase {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("text/html"))
                 .andExpect(content().string(containsString("Пароль доступа")))
-                // витрина подставляет username=user скрытым полем
-                .andExpect(content().string(containsString("value=\"user\"")));
-    }
-
-    @Test
-    @WithAnonymousUser
-    void operatorLoginPageHasFullForm() throws Exception {
-        mockMvc.perform(get("/login-operator"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Логин")))
-                .andExpect(content().string(containsString("Вход для оператора")));
+                // витрина подставляет маркер-логин: роль определяется по паролю
+                .andExpect(content().string(containsString("value=\"__by_password__\"")));
     }
 }

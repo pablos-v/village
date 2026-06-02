@@ -61,4 +61,40 @@ class ExpenseServiceTest extends IntegrationTestBase {
         assertThatThrownBy(() -> expenseService.create(req))
                 .isInstanceOf(InsufficientBalanceException.class);
     }
+
+    @Test
+    void updateExpenseChangesFields() {
+        Event ev = eventRepo.save(new Event(null, "x", new BigDecimal("500")));
+        Street st = streetRepo.save(new Street(null, "Зелёная"));
+        Bldng bl = bldngRepo.save(new Bldng(null, "1", null));
+        Household hh = hhRepo.save(new Household(null, addressRepo.save(new Address(null, st, bl))));
+        paymentRepo.save(new Payment(null, hh, LocalDate.now(), ev, new BigDecimal("1000")));
+        var exp = expenseRepo.save(new Expense(null, ev, new BigDecimal("100"), LocalDate.now(), "old"));
+
+        var dto = expenseService.getForEdit(exp.getId());
+        assertThat(dto.amount()).isEqualByComparingTo("100");
+
+        expenseService.update(exp.getId(),
+                new CreateExpenseRequest(ev.getId(), new BigDecimal("300"), LocalDate.now(), "new"));
+
+        var reloaded = expenseRepo.findById(exp.getId()).orElseThrow();
+        assertThat(reloaded.getAmount()).isEqualByComparingTo("300");
+        assertThat(reloaded.getComment()).isEqualTo("new");
+    }
+
+    @Test
+    void updateExpenseAllowsRaisingUpToOldAmountPlusBalance() {
+        // остаток после: приход 100 − расход 100 = 0. Правка расхода до 100 (=available) — ок.
+        Event ev = eventRepo.save(new Event(null, "x", new BigDecimal("500")));
+        Street st = streetRepo.save(new Street(null, "Зелёная"));
+        Bldng bl = bldngRepo.save(new Bldng(null, "1", null));
+        Household hh = hhRepo.save(new Household(null, addressRepo.save(new Address(null, st, bl))));
+        paymentRepo.save(new Payment(null, hh, LocalDate.now(), ev, new BigDecimal("100")));
+        var exp = expenseRepo.save(new Expense(null, ev, new BigDecimal("100"), LocalDate.now(), "x"));
+
+        // попытка поднять до 150 при доступном 100 → запрет
+        var tooMuch = new CreateExpenseRequest(ev.getId(), new BigDecimal("150"), LocalDate.now(), "x");
+        assertThatThrownBy(() -> expenseService.update(exp.getId(), tooMuch))
+                .isInstanceOf(InsufficientBalanceException.class);
+    }
 }

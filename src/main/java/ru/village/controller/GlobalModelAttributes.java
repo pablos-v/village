@@ -32,4 +32,10 @@ public class GlobalModelAttributes {
     public String tagline() {
         return branding.tagline();
     }
+
+    /** HTML-сниппет счётчика посещений (вставляется в футер как есть). */
+    @ModelAttribute("counter")
+    public String counter() {
+        return branding.counter();
+    }
 }

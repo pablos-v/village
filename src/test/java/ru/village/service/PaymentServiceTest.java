@@ -76,4 +76,35 @@ class PaymentServiceTest extends IntegrationTestBase {
         assertThatThrownBy(() -> paymentService.create(req))
                 .isInstanceOf(EntityNotFoundException.class);
     }
+
+    @Test
+    void getForEditReturnsCurrentValues() {
+        Street st = streetRepo.save(new Street(null, "Зелёная"));
+        Bldng bl = bldngRepo.save(new Bldng(null, "316", null));
+        Household hh = hhRepo.save(new Household(null, addressRepo.save(new Address(null, st, bl))));
+        Event ev = eventRepo.save(new Event(null, "март", new BigDecimal("500")));
+        var p = paymentRepo.save(new Payment(null, hh, LocalDate.of(2026, 3, 1), ev, new BigDecimal("500")));
+
+        var dto = paymentService.getForEdit(p.getId());
+        assertThat(dto.eventId()).isEqualTo(ev.getId());
+        assertThat(dto.householdId()).isEqualTo(hh.getId());
+        assertThat(dto.address()).isEqualTo("ул. Зелёная, д. 316");
+        assertThat(dto.amount()).isEqualByComparingTo("500");
+    }
+
+    @Test
+    void updatePaymentChangesAmountAndDate() {
+        Street st = streetRepo.save(new Street(null, "Зелёная"));
+        Bldng bl = bldngRepo.save(new Bldng(null, "316", null));
+        Household hh = hhRepo.save(new Household(null, addressRepo.save(new Address(null, st, bl))));
+        Event ev = eventRepo.save(new Event(null, "март", new BigDecimal("500")));
+        var p = paymentRepo.save(new Payment(null, hh, LocalDate.of(2026, 3, 1), ev, new BigDecimal("500")));
+
+        paymentService.update(p.getId(),
+                new CreatePaymentRequest(ev.getId(), hh.getId(), new BigDecimal("750"), LocalDate.of(2026, 4, 2)));
+
+        var reloaded = paymentRepo.findById(p.getId()).orElseThrow();
+        assertThat(reloaded.getAmount()).isEqualByComparingTo("750");
+        assertThat(reloaded.getPaydate()).isEqualTo(LocalDate.of(2026, 4, 2));
+    }
 }

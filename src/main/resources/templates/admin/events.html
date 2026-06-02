@@ -15,7 +15,7 @@
             <tbody>
             <tr th:each="e : ${events}">
                 <td th:text="${e.name}"></td>
-                <td class="text-end" th:text="${#numbers.formatInteger(e.cost, 1, 'NONE')} + ' ₽'"></td>
+                <td class="text-end" th:text="${e.cost != null} ? (${#numbers.formatInteger(e.cost, 1, 'NONE')} + ' ₽') : '—'"></td>
             </tr>
             <tr th:if="${events.isEmpty()}"><td colspan="2" class="text-muted text-center">Пока нет событий</td></tr>
             </tbody>

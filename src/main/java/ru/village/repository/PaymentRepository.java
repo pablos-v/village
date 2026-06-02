@@ -27,4 +27,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     /** Годы, за которые есть платежи, по убыванию. */
     @Query("SELECT DISTINCT CAST(EXTRACT(YEAR FROM p.paydate) AS integer) FROM Payment p ORDER BY 1 DESC")
     List<Integer> findDistinctYears();
+
+    /** Сколько платежей привязано к дому — для защиты от удаления адреса с историей. */
+    long countByHouseholdId(Long householdId);
 }

@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.village.controller.dto.request.CreatePaymentRequest;
+import ru.village.controller.dto.response.PaymentEditDto;
 import ru.village.controller.dto.response.PaymentResponse;
 import ru.village.domain.Payment;
 import ru.village.exception.EntityNotFoundException;
@@ -52,6 +53,37 @@ public class PaymentService implements IPaymentService {
 
         Payment saved = paymentRepository.save(new Payment(null, household, req.date(), event, req.amount()));
         log.info("audit: payment created id={} hh={} event={} amount={} by user={}",
+                saved.getId(), req.householdId(), req.eventId(), req.amount(), currentUser());
+        return paymentMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaymentEditDto getForEdit(Long id) {
+        var p = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Payment " + id + " не найден"));
+        var a = p.getHousehold().getAddress();
+        String address = "ул. " + a.getStreet().getName() + ", д. " + a.getBldng().getNumber();
+        return new PaymentEditDto(p.getId(), p.getEvent().getId(), p.getHousehold().getId(),
+                address, p.getAmount(), p.getPaydate());
+    }
+
+    @Override
+    @Transactional
+    public PaymentResponse update(Long id, CreatePaymentRequest req) {
+        var payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Payment " + id + " не найден"));
+        var event = eventRepository.findById(req.eventId())
+                .orElseThrow(() -> new EntityNotFoundException("Event " + req.eventId() + " не найден"));
+        var household = householdRepository.findById(req.householdId())
+                .orElseThrow(() -> new EntityNotFoundException("Household " + req.householdId() + " не найден"));
+
+        payment.setEvent(event);
+        payment.setHousehold(household);
+        payment.setPaydate(req.date());
+        payment.setAmount(req.amount());
+        Payment saved = paymentRepository.save(payment);
+        log.info("audit: payment updated id={} hh={} event={} amount={} by user={}",
                 saved.getId(), req.householdId(), req.eventId(), req.amount(), currentUser());
         return paymentMapper.toResponse(saved);
     }

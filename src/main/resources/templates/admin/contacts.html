@@ -15,7 +15,7 @@
             <tbody>
             <tr th:each="c : ${contacts}">
                 <td th:text="${c.type}"></td>
-                <td th:text="${c.contactInfo}"></td>
+                <td th:utext="${c.contactInfoHtml}"></td>
                 <td th:text="${c.comment}"></td>
                 <td class="text-nowrap">
                     <a class="btn btn-sm btn-outline-success" th:href="@{'/admin/contacts/' + ${c.id} + '/edit'}">Изменить</a>
