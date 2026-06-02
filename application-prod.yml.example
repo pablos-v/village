@@ -11,22 +11,38 @@
 #
 # Установка (см. DEPLOY.merc.md):
 #   cp application-prod.yml.example application-prod.yml
+#   chmod 644 application-prod.yml   # читает процесс ВНУТРИ контейнера (uid 1000), не root
 #   nano application-prod.yml
 # =====================================================================
 
 app:
   branding:
-    # HTML-сниппет счётчика посещений (Яндекс.Метрика / GA / любой).
+    # ------------------------------------------------------------------
+    # HTML-сниппет счётчика посещений (Я.Метрика / GA / любой).
     # Вставляется в футер КАК ЕСТЬ через th:utext.
-    # Пустая строка — счётчик не выводится.
     #
-    # Пример:
+    # ВАЖНО: значение задаётся ТОЛЬКО через literal block | — не через
+    # кавычки. Кавычки в HTML/JS-сниппете (' и ") сразу ломают YAML.
+    # Все строки HTML/JS внутри блока должны быть на ОДНОМ уровне
+    # отступа (минимум на 2 пробела глубже, чем `counter:`).
+    #
+    # Если счётчик не нужен — НИЧЕГО не раскомментируй: Spring возьмёт
+    # дефолт `counter: ''` из application.yml и в футере ничего не будет.
+    #
+    # Чтобы включить — раскомментируй ВСЁ ниже (вместе со строкой
+    # `counter: |`) и впиши свой сниппет:
+    # ------------------------------------------------------------------
+    #
     # counter: |
     #   <!-- Yandex.Metrika counter -->
     #   <script type="text/javascript">
-    #     (function(m,e,t,r,i,k,a){ ... })(window, document, 'script', ...);
-    #     ym(XXXXXXXX, 'init', { ... });
+    #     (function(m,e,t,r,i,k,a){
+    #       m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    #       m[i].l=1*new Date();
+    #       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    #       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    #     })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=XXXXXXXX', 'ym');
+    #     ym(XXXXXXXX, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
     #   </script>
     #   <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     #   <!-- /Yandex.Metrika counter -->
-    counter: ''

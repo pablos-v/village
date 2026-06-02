@@ -112,29 +112,25 @@ IMAGE=ghcr.io/pablos-v/village:latest
 
 ```bash
 cp application-prod.yml.example application-prod.yml
+chmod 644 application-prod.yml   # читает Java внутри контейнера (uid 1000), не root
 nano application-prod.yml
 ```
 
-Если счётчик не нужен — оставь `counter: ''` как в шаблоне, **файл всё
-равно должен существовать** (без него docker compose упадёт на volume-mount).
+Если счётчик не нужен — **ничего не раскомментируй**, файла-копии достаточно
+(без файла docker compose упадёт на volume-mount; с пустым/закомментированным
+файлом Spring возьмёт дефолт `counter: ''` из `application.yml`).
 
-Заполнить (пример с Я.Метрикой):
+Если нужен — раскомментируй блок `counter: |` в шаблоне и впиши свой сниппет.
+**Только через literal block `|`, не в кавычках** — `'` и `"` внутри HTML/JS
+сразу ломают YAML. Файл в `.gitignore` — твой счётчик не попадает в публичный
+репо.
 
-```yaml
-app:
-  branding:
-    counter: |
-      <!-- Yandex.Metrika counter -->
-      <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){ ... })(window, document, 'script', ...);
-        ym(XXXXXXXX, 'init', { ... });
-      </script>
-      <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-      <!-- /Yandex.Metrika counter -->
+Проверь YAML локально на сервере перед деплоем — иначе village-app уйдёт в
+restart loop:
+
+```bash
+python3 -c "import yaml; yaml.safe_load(open('application-prod.yml')); print('YAML OK')"
 ```
-
-`|` в YAML — литеральный блок, переводы строк сохраняются, escape кавычек
-не требуется. Файл в `.gitignore` — твой счётчик не попадает в публичный репо.
 
 ## 5. Первый запуск
 
