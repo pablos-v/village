@@ -3,19 +3,13 @@ package ru.village.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/** Страницы входа: витрина для жителей (/welcome) и форма для оператора/админа (/login-operator). */
+/** Единая витрина входа: одно поле пароля, роль (USER/OPERATOR/ADMIN) определяется по паролю. */
 @Controller
 public class LoginController {
 
-    /** Витрина: одно поле «пароль доступа», вход как USER. */
+    /** Витрина: одно поле «пароль доступа». */
     @GetMapping("/welcome")
     public String welcome() {
         return "welcome";
-    }
-
-    /** Полная форма логин/пароль для OPERATOR и ADMIN. */
-    @GetMapping("/login-operator")
-    public String loginOperator() {
-        return "login-operator";
     }
 }

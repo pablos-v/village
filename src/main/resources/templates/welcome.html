@@ -11,7 +11,7 @@
     <div class="card auth-card">
         <div class="card-body">
             <form th:action="@{/login}" method="post">
-                <input type="hidden" name="username" value="user"/>
+                <input type="hidden" name="username" value="__by_password__"/>
                 <div class="mb-3">
                     <label class="form-label">Пароль доступа</label>
                     <input type="password" name="password" class="form-control" required autofocus/>
@@ -20,10 +20,6 @@
             </form>
         </div>
     </div>
-
-    <p class="text-center mt-3">
-        <a class="small text-muted" th:href="@{/login-operator}">Вход для оператора →</a>
-    </p>
 </div>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
