@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head('Новый расход')}"></head>
+<head th:replace="~{fragments/layout :: head(${formTitle})}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container" style="max-width: 540px;">
-    <h1 class="mb-3">Внести расход</h1>
+    <h1 class="mb-3" th:text="${formTitle}">Внести расход</h1>
 
-    <form th:action="@{/admin/expense}" th:object="${form}" method="post">
+    <form th:action="@{${formAction}}" th:object="${form}" method="post">
         <div class="mb-3">
             <label class="form-label">Событие</label>
             <select th:field="*{eventId}" class="form-select">
@@ -35,7 +35,7 @@
         </div>
 
         <button class="btn btn-success">Сохранить</button>
-        <a class="btn btn-link" th:href="@{/}">Отмена</a>
+        <a class="btn btn-link" th:href="@{/expenses}">Отмена</a>
     </form>
 </div>
 

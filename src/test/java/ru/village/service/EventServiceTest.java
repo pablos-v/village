@@ -20,6 +20,13 @@ class EventServiceTest extends IntegrationTestBase {
     }
 
     @Test
+    void createEventWithoutCost() {
+        var event = eventService.create(new CreateEventRequest("без суммы", null));
+        assertThat(event.id()).isNotNull();
+        assertThat(event.cost()).isNull();
+    }
+
+    @Test
     void listEvents() {
         eventService.create(new CreateEventRequest("a", new BigDecimal("100")));
         eventService.create(new CreateEventRequest("b", new BigDecimal("200")));

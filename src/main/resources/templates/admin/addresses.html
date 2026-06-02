@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Адреса')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h1 class="mb-0">Адреса — управление</h1>
+        <a class="btn btn-success btn-lg fw-bold" th:href="@{/admin/addresses/new}">➕ ДОБАВИТЬ</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+            <tr><th>Адрес</th><th class="text-center">Жителей</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="h : ${households}">
+                <td th:text="${h.address}"></td>
+                <td class="text-center" th:text="${h.inhabitants}"></td>
+                <td class="text-nowrap text-end">
+                    <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/addresses/{id}(id=${h.id})}">Жители</a>
+                    <a class="btn btn-sm btn-outline-success" th:href="@{/admin/addresses/{id}/edit(id=${h.id})}">Изменить</a>
+                    <form th:action="@{/admin/addresses/{id}/delete(id=${h.id})}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить адрес и всех его жителей?')">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${households.isEmpty()}"><td colspan="3" class="text-muted text-center">Пока нет адресов</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

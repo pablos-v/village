@@ -40,7 +40,7 @@ class HomePageTest extends IntegrationTestBase {
     void operatorSeesAdminLinks() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("/admin/payment/new")));
+                .andExpect(content().string(containsString("/admin/events")));
     }
 
     @Test
@@ -48,6 +48,6 @@ class HomePageTest extends IntegrationTestBase {
     void userDoesNotSeeAdminLinks() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("/admin/payment/new"))));
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("/admin/events"))));
     }
 }

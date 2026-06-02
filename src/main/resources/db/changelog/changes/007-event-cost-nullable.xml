@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <!-- Сумма события теперь необязательна -->
+    <changeSet id="007-event-cost-nullable" author="village">
+        <dropNotNullConstraint tableName="events" columnName="cost"
+                               schemaName="village" columnDataType="numeric(10,2)"/>
+    </changeSet>
+
+</databaseChangeLog>

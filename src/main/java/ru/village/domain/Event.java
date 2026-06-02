@@ -21,6 +21,6 @@ public class Event {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal cost;
 }

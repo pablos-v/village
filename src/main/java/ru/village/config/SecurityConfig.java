@@ -106,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/admin/contacts/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/addresses/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasAnyRole("OPERATOR", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/events", "/api/payments", "/api/expenses")
                                 .hasAnyRole("OPERATOR", "ADMIN")

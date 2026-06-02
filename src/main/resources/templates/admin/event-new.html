@@ -14,7 +14,7 @@
             <div class="text-danger small" th:errors="*{name}"></div>
         </div>
         <div class="mb-3">
-            <label class="form-label">Сумма</label>
+            <label class="form-label">Сумма <span class="text-muted">(необязательно)</span></label>
             <input type="number" step="1" min="0" th:field="*{cost}" class="form-control"/>
             <div class="text-danger small" th:errors="*{cost}"></div>
         </div>

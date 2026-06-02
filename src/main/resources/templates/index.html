@@ -7,7 +7,7 @@
 <div class="container">
     <div class="card balance-hero mb-4">
         <div class="card-body text-center py-4">
-            <h2 class="card-title">💰 Текущий остаток кассы</h2>
+            <h2 class="card-title">💰 Текущий остаток</h2>
             <p class="display-4"
                th:classappend="${balance.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'balance-positive' : 'balance-negative'}"
                th:text="${#numbers.formatInteger(balance, 1, 'NONE')} + ' ₽'">0 ₽</p>
@@ -44,7 +44,8 @@
             <h3 class="section-title">📞 Полезная информация</h3>
             <ul class="list-group">
                 <li class="list-group-item" th:each="c : ${contacts}">
-                    <strong th:text="${c.type}"></strong>: <span th:text="${c.contactInfo}"></span>
+                    <strong th:text="${c.type}"></strong>:
+                    <span th:utext="${c.contactInfoHtml}"></span>
                     <small th:if="${c.comment}" class="text-muted d-block" th:text="${c.comment}"></small>
                 </li>
             </ul>

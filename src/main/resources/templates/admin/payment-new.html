@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head('Новый приход')}"></head>
+<head th:replace="~{fragments/layout :: head(${formTitle})}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container" style="max-width: 540px;">
-    <h1 class="mb-3">Внести приход</h1>
+    <h1 class="mb-3" th:text="${formTitle}">Внести приход</h1>
 
-    <form th:action="@{/admin/payment}" th:object="${form}" method="post">
+    <form th:action="@{${formAction}}" th:object="${form}" method="post">
         <div class="mb-3">
             <label class="form-label">Событие</label>
             <select th:field="*{eventId}" class="form-select">
-                <option th:each="e : ${events}" th:value="${e.id}"
-                        th:text="${e.name + ' (' + e.cost + ' ₽)'}"></option>
+                <option th:each="e : ${events}" th:value="${e.id}" th:text="${e.name}"></option>
             </select>
             <div class="text-danger small" th:errors="*{eventId}"></div>
         </div>
@@ -20,7 +19,7 @@
         <div class="mb-3 position-relative">
             <label class="form-label">Адрес</label>
             <input type="text" class="form-control" id="address-search"
-                   placeholder="Укажите адрес" autocomplete="off"/>
+                   placeholder="Укажите адрес" autocomplete="off" th:value="${addressLabel}"/>
             <input type="hidden" th:field="*{householdId}" id="household-id"/>
             <ul class="dropdown-menu w-100" id="address-suggestions"
                 style="max-height: 240px; overflow-y: auto;"></ul>
@@ -40,7 +39,7 @@
         </div>
 
         <button class="btn btn-success">Сохранить</button>
-        <a class="btn btn-link" th:href="@{/}">Отмена</a>
+        <a class="btn btn-link" th:href="@{/payments}">Отмена</a>
     </form>
 </div>
 

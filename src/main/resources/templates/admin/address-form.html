@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${formTitle})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container" style="max-width: 540px;">
+    <h1 class="mb-3" th:text="${formTitle}">Адрес</h1>
+
+    <form th:action="@{${formAction}}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Улица</label>
+            <select th:field="*{streetId}" class="form-select">
+                <option value="">— выбрать из списка —</option>
+                <option th:each="s : ${streets}" th:value="${s.id}" th:text="${s.name}"></option>
+            </select>
+            <div class="text-danger small" th:errors="*{streetId}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">…или новая улица</label>
+            <input type="text" th:field="*{newStreet}" class="form-control" maxlength="255"
+                   placeholder="Название новой улицы (если её нет в списке)"/>
+            <div class="text-danger small" th:errors="*{newStreet}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Номер дома</label>
+            <input type="text" th:field="*{number}" class="form-control" maxlength="50"/>
+            <div class="text-danger small" th:errors="*{number}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Описание (необязательно)</label>
+            <input type="text" th:field="*{description}" class="form-control" maxlength="255"/>
+            <div class="text-danger small" th:errors="*{description}"></div>
+        </div>
+
+        <button class="btn btn-success">Сохранить</button>
+        <a class="btn btn-link" th:href="@{/admin/addresses}">Отмена</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.village.controller.dto.request.CreateExpenseRequest;
+import ru.village.controller.dto.response.ExpenseEditDto;
 import ru.village.controller.dto.response.ExpenseResponse;
 import ru.village.domain.Expense;
 import ru.village.exception.EntityNotFoundException;
@@ -46,6 +47,37 @@ public class ExpenseService implements IExpenseService {
         Expense saved = expenseRepository.save(new Expense(
                 null, event, req.amount(), req.date(), req.comment()));
         log.info("audit: expense created id={} event={} amount={} comment='{}' by user={}",
+                saved.getId(), req.eventId(), req.amount(), req.comment(), currentUser());
+        return expenseMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExpenseEditDto getForEdit(Long id) {
+        var e = expenseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Expense " + id + " не найден"));
+        return new ExpenseEditDto(e.getId(), e.getEvent().getId(), e.getAmount(), e.getDate(), e.getComment());
+    }
+
+    @Override
+    @Transactional
+    public ExpenseResponse update(Long id, CreateExpenseRequest req) {
+        var expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Expense " + id + " не найден"));
+        var event = eventRepository.findById(req.eventId())
+                .orElseThrow(() -> new EntityNotFoundException("Event " + req.eventId() + " не найден"));
+        // доступно = текущий остаток + старая сумма этого расхода (она уже вычтена из остатка)
+        var available = balanceService.currentBalance().add(expense.getAmount());
+        if (req.amount().compareTo(available) > 0) {
+            throw new InsufficientBalanceException(
+                    "Расход " + req.amount() + " больше доступного остатка " + available);
+        }
+        expense.setEvent(event);
+        expense.setAmount(req.amount());
+        expense.setDate(req.date());
+        expense.setComment(req.comment());
+        Expense saved = expenseRepository.save(expense);
+        log.info("audit: expense updated id={} event={} amount={} comment='{}' by user={}",
                 saved.getId(), req.eventId(), req.amount(), req.comment(), currentUser());
         return expenseMapper.toResponse(saved);
     }

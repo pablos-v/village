@@ -51,17 +51,14 @@ public class PublicController {
     public String payments(
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
-            @PageableDefault(size = 50) Pageable pageable,
+            @PageableDefault(size = 20) Pageable pageable,
             Model model
     ) {
-        LocalDate now = LocalDate.now();
-        if (year == null) year = now.getYear();
-        if (month == null) month = now.getMonthValue();
-
+        // фильтр по умолчанию выключен: year/month == null → показываем все, новые сверху
         // годы с платежами + всегда текущий, по убыванию
         TreeSet<Integer> years = new TreeSet<>(Comparator.reverseOrder());
         years.addAll(paymentService.availableYears());
-        years.add(now.getYear());
+        years.add(LocalDate.now().getYear());
 
         model.addAttribute("payments", paymentService.findAll(year, month, pageable));
         model.addAttribute("year", year);
@@ -72,7 +69,7 @@ public class PublicController {
     }
 
     @GetMapping("/expenses")
-    public String expenses(@PageableDefault(size = 50) Pageable pageable, Model model) {
+    public String expenses(@PageableDefault(size = 20) Pageable pageable, Model model) {
         model.addAttribute("expenses", expenseService.findAll(pageable));
         return "expenses";
     }
