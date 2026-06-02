@@ -11,6 +11,9 @@ CLAUDE.md
 doc/PLAN.md
 doc/plans/
 
+# Временные локальные данные для наполнения БД (не коммитятся)
+doc/data/
+
 # GitHub (WARNING: CI/CD workflows won't work!)
 # .github/
 
