@@ -108,10 +108,30 @@ nano .env
 
 Опционально:
 - `APP_BRAND` / `APP_TAGLINE` — название в navbar, footer, title вкладки
-- `APP_COUNTER` — HTML-сниппет счётчика посещений (Яндекс.Метрика и т.п.),
-  вставляется в футер как есть; пусто — ничего не добавляется
 
 Сгенерировать сильный пароль: `openssl rand -base64 24`.
+
+Счётчик посещений (Я.Метрика и т.п.) задаётся не в `.env`, а в
+`application-prod.yml` — см. следующий шаг.
+
+---
+
+## 3a. `application-prod.yml` (счётчик и другие prod-only override'ы)
+
+Длинный многострочный HTML в `.env` не положить — формат не дружит с
+переводами строк. Для таких значений рядом лежит `application-prod.yml`,
+который монтируется в контейнер и переопределяет дефолты из
+`application.yml` (профиль `prod` активирован в `docker-compose.prod.yml`).
+
+```bash
+cp application-prod.yml.example application-prod.yml
+nano application-prod.yml
+```
+
+Если счётчик не нужен — оставь `counter: ''` как в шаблоне, **файл всё
+равно должен существовать** (без него docker compose упадёт на volume-mount).
+
+Файл в `.gitignore` — твой счётчик не попадает в публичный репо.
 
 ---
 

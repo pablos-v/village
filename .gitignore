@@ -40,3 +40,7 @@ target/
 .env
 .env.local
 .env.*.local
+
+# Прод-only переопределения Spring-конфига (см. application-prod.yml.example).
+# Может содержать персональный HTML счётчика / другие prod-only значения.
+application-prod.yml

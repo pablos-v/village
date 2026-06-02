@@ -1,0 +1,32 @@
+# =====================================================================
+# Village — переопределения конфигурации для прод-профиля
+#
+# Этот файл монтируется в контейнер как /app/application-prod.yml,
+# Spring Boot подхватывает его автоматически (профиль prod включён в
+# docker-compose.merc.yml).
+#
+# Используется для длинных/многострочных значений, которые неудобно
+# или невозможно держать в .env (например, HTML-сниппет счётчика).
+# Секретов тут быть НЕ должно — они в .env.
+#
+# Установка (см. DEPLOY.merc.md):
+#   cp application-prod.yml.example application-prod.yml
+#   nano application-prod.yml
+# =====================================================================
+
+app:
+  branding:
+    # HTML-сниппет счётчика посещений (Яндекс.Метрика / GA / любой).
+    # Вставляется в футер КАК ЕСТЬ через th:utext.
+    # Пустая строка — счётчик не выводится.
+    #
+    # Пример:
+    # counter: |
+    #   <!-- Yandex.Metrika counter -->
+    #   <script type="text/javascript">
+    #     (function(m,e,t,r,i,k,a){ ... })(window, document, 'script', ...);
+    #     ym(XXXXXXXX, 'init', { ... });
+    #   </script>
+    #   <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    #   <!-- /Yandex.Metrika counter -->
+    counter: ''

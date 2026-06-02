@@ -68,6 +68,11 @@ services:
       - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=${DOMAIN_ADDRESS}
       - LETSENCRYPT_EMAIL=${ADMIN_EMAIL}
+    volumes:
+      # Прод-only переопределения (длинные многострочные значения вроде HTML-
+      # счётчика, для которых .env не годится). Spring подхватит автоматически
+      # через активный профиль prod. См. application-prod.yml.example.
+      - ./application-prod.yml:/app/application-prod.yml:ro
     expose:
       - "8080"
     networks:
